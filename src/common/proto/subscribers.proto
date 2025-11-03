@@ -268,7 +268,8 @@ message GetSubscribersByBusinessResponse {
 }
 
 message ValidateParentCompanyUserRequest {
-  string subscriptionBussineId = 1;
+  string personId = 1;
+  string subscriptionBussineId = 2;
 }
 
 message ValidateParentCompanyUserResponse {
