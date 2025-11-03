@@ -4,3 +4,4 @@ export * from './create-subscriptions-bussine-alternal.dto';
 export * from './create-subscriptions-bussine-alternal-response.dto';
 export * from './get-client-businesses.dto';
 export * from './get-client-businesses-response.dto';
+export * from './validate-parent-and-get-businesses.dto';

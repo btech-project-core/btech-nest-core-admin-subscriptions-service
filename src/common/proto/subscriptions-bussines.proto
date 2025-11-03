@@ -4,6 +4,7 @@ package subscriptions_bussines;
 
 service SubscriptionsBussinesService {
   rpc CreateAlternal(CreateAlternalRequest) returns (CreateAlternalResponse);
+  rpc ValidateParentAndGetBusinesses(ValidateParentAndGetBusinessesRequest) returns (ValidateParentAndGetBusinessesResponse);
 }
 
 // ===== REQUESTS =====
@@ -17,6 +18,11 @@ message CreateAlternalRequest {
   string personId = 2;
   string subscriptionServiceId = 3;
   repeated NaturalPersonForSubscriber naturalPersons = 4;
+}
+
+message ValidateParentAndGetBusinessesRequest {
+  string subscriptionBussineId = 1;
+  string personId = 2;
 }
 
 // ===== RESPONSES =====
@@ -37,4 +43,9 @@ message CreateAlternalResponse {
   SubscriptionData subscription = 4;
   string createdAt = 5;
   string updatedAt = 6;
+}
+
+message ValidateParentAndGetBusinessesResponse {
+  bool isParent = 1;
+  repeated string subscriptionBussineIds = 2;
 }

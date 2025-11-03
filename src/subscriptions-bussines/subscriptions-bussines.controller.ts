@@ -6,6 +6,8 @@ import {
   CreateSubscriptionsBussineAlternalResponseDto,
   GetClientBusinessesDto,
   GetClientBusinessesResponseDto,
+  ValidateParentAndGetBusinessesDto,
+  ValidateParentAndGetBusinessesResponseDto,
 } from './dto';
 
 @Controller()
@@ -56,6 +58,15 @@ export class SubscriptionsBussinesController {
   ): Promise<GetClientBusinessesResponseDto> {
     return this.subscriptionsBussinesService.getClientBusinesses(
       getClientBusinessesDto,
+    );
+  }
+
+  @GrpcMethod('SubscriptionsBussinesService', 'ValidateParentAndGetBusinesses')
+  async validateParentAndGetBusinesses(
+    dto: ValidateParentAndGetBusinessesDto,
+  ): Promise<ValidateParentAndGetBusinessesResponseDto> {
+    return this.subscriptionsBussinesService.validateParentAndGetBusinesses(
+      dto,
     );
   }
 }

@@ -6,6 +6,8 @@ import {
   CreateSubscriptionsBussineAlternalResponseDto,
   GetClientBusinessesDto,
   GetClientBusinessesResponseDto,
+  ValidateParentAndGetBusinessesDto,
+  ValidateParentAndGetBusinessesResponseDto,
 } from '../dto';
 
 @Injectable()
@@ -47,6 +49,14 @@ export class SubscriptionsBussinesService {
   ): Promise<GetClientBusinessesResponseDto> {
     return this.subscriptionsBussinesCustomService.getClientBusinesses(
       getClientBusinessDto,
+    );
+  }
+
+  async validateParentAndGetBusinesses(
+    dto: ValidateParentAndGetBusinessesDto,
+  ): Promise<ValidateParentAndGetBusinessesResponseDto> {
+    return this.subscriptionsBussinesCustomService.validateParentAndGetBusinesses(
+      dto,
     );
   }
 }
