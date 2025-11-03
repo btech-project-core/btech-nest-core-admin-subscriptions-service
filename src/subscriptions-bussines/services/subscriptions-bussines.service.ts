@@ -55,7 +55,7 @@ export class SubscriptionsBussinesService {
   async validateParentAndGetBusinesses(
     dto: ValidateParentAndGetBusinessesDto,
   ): Promise<ValidateParentAndGetBusinessesResponseDto> {
-    return this.subscriptionsBussinesCustomService.validateParentAndGetBusinesses(
+    return this.subscriptionsBussinesValidateService.validateParentAndGetBusinesses(
       dto,
     );
   }

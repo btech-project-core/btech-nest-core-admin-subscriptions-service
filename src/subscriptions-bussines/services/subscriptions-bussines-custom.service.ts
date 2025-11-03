@@ -12,8 +12,6 @@ import {
   GetClientBusinessesResponseDto,
   ClientBusinessDto,
   GetClientBusinessesDto,
-  ValidateParentAndGetBusinessesDto,
-  ValidateParentAndGetBusinessesResponseDto,
 } from '../dto';
 import { SubscriptionsBussinesCoreService } from './subscriptions-bussines-core.service';
 import { AdminPersonsService } from 'src/common/services/admin-persons.service';
@@ -238,54 +236,5 @@ export class SubscriptionsBussinesCustomService {
     }
 
     return { clientBusinesses };
-  }
-
-  async validateParentAndGetBusinesses(
-    dto: ValidateParentAndGetBusinessesDto,
-  ): Promise<ValidateParentAndGetBusinessesResponseDto> {
-    const { subscriptionBussineId, personId } = dto;
-    // Buscar el subscriptionBussine con su subscription
-    const subscriptionBussine =
-      await this.subscriptionsBussinesRepository.findOne({
-        where: { subscriptionBussineId },
-        relations: ['subscription'],
-      });
-    if (!subscriptionBussine)
-      throw new RpcException({
-        status: HttpStatus.NOT_FOUND,
-        message: `No se encontró el negocio de suscripción con id: ${subscriptionBussineId}`,
-      });
-    // Verificar si el personId coincide con el personId del subscriptionBussine
-    if (subscriptionBussine.personId !== personId)
-      throw new RpcException({
-        status: HttpStatus.BAD_REQUEST,
-        message: `El personId ${personId} no coincide con el negocio de suscripción`,
-      });
-    // Comparar si es el padre
-    const isParent =
-      subscriptionBussine.personId ===
-      subscriptionBussine.subscription.personId;
-    // Si es padre, obtener todos los subscriptionBussineIds asociados a la subscriptionId
-    if (isParent) {
-      const allBusinesses = await this.subscriptionsBussinesRepository.find({
-        where: {
-          subscription: {
-            subscriptionId: subscriptionBussine.subscription.subscriptionId,
-          },
-        },
-        select: ['subscriptionBussineId'],
-      });
-      const subscriptionBussineIds = allBusinesses.map(
-        (business) => business.subscriptionBussineId,
-      );
-      return {
-        isParent: true,
-        subscriptionBussineIds,
-      };
-    }
-    // Si no es padre, solo retornar el booleano
-    return {
-      isParent: false,
-    };
   }
 }
