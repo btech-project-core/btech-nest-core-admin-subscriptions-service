@@ -8,6 +8,7 @@ import {
   Unique,
 } from 'typeorm';
 import { RoleLevel } from '../enums/role-level.enum';
+import { RoleSubscriptionDetail } from './role-subscription-detail.entity';
 
 @Entity({ name: 'role' })
 @Unique(['code', 'subscriptionBussineId'])
@@ -53,4 +54,10 @@ export class Role extends Timestamped {
 
   @OneToMany(() => SubscriberRole, (subscriberRole) => subscriberRole.role)
   subscriberRoles: SubscriberRole[];
+
+  @OneToMany(
+    () => RoleSubscriptionDetail,
+    (roleSubscriptionDetail) => roleSubscriptionDetail.role,
+  )
+  roleSubscriptionDetails: RoleSubscriptionDetail[];
 }

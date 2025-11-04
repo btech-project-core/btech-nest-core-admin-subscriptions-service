@@ -10,7 +10,6 @@ import { UserProfileResponseDto } from 'src/common/dto/user-profile.dto';
 import { StatusSubscription } from 'src/subscriptions/enums/status-subscription.enum';
 import { CodeService } from 'src/common/enums/code-service.enum';
 import { AdminPersonsService } from 'src/common/services/admin-persons.service';
-import { SubscriptionsDetailFeaturesService } from 'src/subscriptions-detail/services/subscriptions-detail-features.service';
 import { SubscribersCustomService } from './subscribers-custom.service';
 import { SubscribersValidateService } from './subscribers-validate.service';
 
@@ -20,7 +19,6 @@ export class SubscribersAuthService {
     @InjectRepository(Subscriber)
     private readonly subscriberRepository: Repository<Subscriber>,
     private readonly adminPersonsService: AdminPersonsService,
-    private readonly subscriptionsDetailFeaturesService: SubscriptionsDetailFeaturesService,
     private readonly subscribersCustomService: SubscribersCustomService,
     private readonly subscribersValidateService: SubscribersValidateService,
   ) {}
@@ -44,7 +42,6 @@ export class SubscribersAuthService {
           isValidWithDocumentNumber.naturalPersonIds,
           service,
         );
-      console.log(`newUsername: ${newUsername}`);
       subscriber =
         await this.subscribersCustomService.querySubscriberByUsername(
           newUsername,
@@ -99,6 +96,14 @@ export class SubscribersAuthService {
         'subscriberRoles',
       )
       .leftJoinAndSelect('subscriberRoles.role', 'role')
+      .leftJoinAndSelect(
+        'role.roleSubscriptionDetails',
+        'roleSubscriptionDetails',
+      )
+      .leftJoinAndSelect(
+        'roleSubscriptionDetails.subscriptionDetail',
+        'roleSubscriptionDetail',
+      )
       .where('subscriber.subscriberId = :subscriberId', { subscriberId })
       .andWhere('subscribersSubscriptionDetails.isActive = :isActive', {
         isActive: true,

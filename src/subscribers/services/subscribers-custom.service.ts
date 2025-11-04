@@ -108,6 +108,14 @@ export class SubscribersCustomService {
         'subscriberRoles',
       )
       .leftJoinAndSelect('subscriberRoles.role', 'role')
+      .leftJoinAndSelect(
+        'role.roleSubscriptionDetails',
+        'roleSubscriptionDetails',
+      )
+      .leftJoinAndSelect(
+        'roleSubscriptionDetails.subscriptionDetail',
+        'roleSubscriptionDetail',
+      )
       .where('subscriber.subscriberId = :subscriberId', { subscriberId })
       .andWhere('subscribersSubscriptionDetails.isActive = :isActive', {
         isActive: true,
@@ -185,6 +193,14 @@ export class SubscribersCustomService {
         'subscriberRoles',
       )
       .leftJoinAndSelect('subscriberRoles.role', 'role')
+      .leftJoinAndSelect(
+        'role.roleSubscriptionDetails',
+        'roleSubscriptionDetails',
+      )
+      .leftJoinAndSelect(
+        'roleSubscriptionDetails.subscriptionDetail',
+        'roleSubscriptionDetail',
+      )
       .where('subscriber.username = :username', { username })
       .andWhere(
         'subscribersSubscriptionDetails.subscriptionDetail = subscriptionDetail.subscriptionDetailId',
@@ -219,7 +235,6 @@ export class SubscribersCustomService {
         }),
       );
     }
-
     const subscriber = await queryBuilder.getOne();
     return subscriber || null;
   }
@@ -284,6 +299,14 @@ export class SubscribersCustomService {
         'subscriberRoles',
       )
       .leftJoinAndSelect('subscriberRoles.role', 'role')
+      .leftJoinAndSelect(
+        'role.roleSubscriptionDetails',
+        'roleSubscriptionDetails',
+      )
+      .leftJoinAndSelect(
+        'roleSubscriptionDetails.subscriptionDetail',
+        'roleSubscriptionDetail',
+      )
       .where(
         'subscriptionsBussine.subscriptionBussineId = :subscriptionBussineId',
         { subscriptionBussineId: filters.subscriptionBussineId },
