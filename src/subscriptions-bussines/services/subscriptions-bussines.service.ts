@@ -1,14 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { SubscriptionsBussinesValidateService } from './subscriptions-bussines-validate.service';
 import { SubscriptionsBussinesCustomService } from './subscriptions-bussines-custom.service';
-import {
-  CreateSubscriptionsBussineAlternalDto,
-  CreateSubscriptionsBussineAlternalResponseDto,
-  GetClientBusinessesDto,
-  GetClientBusinessesResponseDto,
-  ValidateParentAndGetBusinessesDto,
-  ValidateParentAndGetBusinessesResponseDto,
-} from '../dto';
 
 @Injectable()
 export class SubscriptionsBussinesService {
@@ -33,30 +25,6 @@ export class SubscriptionsBussinesService {
   ): Promise<string> {
     return this.subscriptionsBussinesCustomService.findSubscriptionBussineIdBySubscriptionDetailId(
       subscriptionDetailId,
-    );
-  }
-
-  async createAlternal(
-    createSubscriptionsBussineAlternalDto: CreateSubscriptionsBussineAlternalDto,
-  ): Promise<CreateSubscriptionsBussineAlternalResponseDto> {
-    return this.subscriptionsBussinesCustomService.createAlternal(
-      createSubscriptionsBussineAlternalDto,
-    );
-  }
-
-  async getClientBusinesses(
-    getClientBusinessDto: GetClientBusinessesDto,
-  ): Promise<GetClientBusinessesResponseDto> {
-    return this.subscriptionsBussinesCustomService.getClientBusinesses(
-      getClientBusinessDto,
-    );
-  }
-
-  async validateParentAndGetBusinesses(
-    dto: ValidateParentAndGetBusinessesDto,
-  ): Promise<ValidateParentAndGetBusinessesResponseDto> {
-    return this.subscriptionsBussinesValidateService.validateParentAndGetBusinesses(
-      dto,
     );
   }
 }

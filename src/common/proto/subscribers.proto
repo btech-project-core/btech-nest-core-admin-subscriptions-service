@@ -11,12 +11,9 @@ service SubscribersService {
   rpc GetSubscriberInfo(GetSubscriberInfoRequest) returns (SubscriberInfoResponse);
   rpc FindSubscribersWithNaturalPersons(FindSubscribersWithNaturalPersonsRequest) returns (FindSubscribersWithNaturalPersonsResponse);
   rpc RegisterSubscriber(RegisterSubscriberRequest) returns (RegisterSubscriberResponse);
-  rpc RegisterSubscriberAlternal(RegisterSubscriberAlternalRequest) returns (RegisterSubscriberAlternalResponse);
   rpc SetPassword(SetPasswordRequest) returns (SetPasswordResponse);
   rpc ValidateSubscriberAlertLevel(ValidateSubscriberAlertLevelRequest) returns (ValidateSubscriberAlertLevelResponse);
   rpc DeleteSubscriber(DeleteSubscriberRequest) returns (DeleteSubscriberResponse);
-  rpc GetSubscribersByBusiness(GetSubscribersByBusinessRequest) returns (GetSubscribersByBusinessResponse);
-  rpc ValidateParentCompanyUser(ValidateParentCompanyUserRequest) returns (ValidateParentCompanyUserResponse);
 }
 
 // ===== REQUESTS =====
@@ -26,23 +23,10 @@ message RegisterSubscriberRequest {
   string naturalPersonId = 3;
   string domain = 4;
   string service = 5;
-}
-
-message RegisterSubscriberResponse {
-  string subscriberId = 1;
-  string username = 2;
-}
-
-message RegisterSubscriberAlternalRequest {
-  string username = 1;
-  string password = 2;
-  string naturalPersonId = 3;
-  string domain = 4;
-  string service = 5;
   optional string role = 6;
 }
 
-message RegisterSubscriberAlternalResponse {
+message RegisterSubscriberResponse {
   string subscriberId = 1;
   string username = 2;
 }
@@ -238,41 +222,4 @@ message DeleteSubscriberRequest {
 
 message DeleteSubscriberResponse {
   string message = 1;
-}
-
-message GetSubscribersByBusinessRequest {
-  string subscriptionBussineId = 1;
-  optional string service = 2;
-  optional int32 page = 3;
-  optional int32 limit = 4;
-}
-
-message SubscriberByBusiness {
-  string subscriberId = 1;
-  string role = 2;
-  string fullName = 3;
-  string paternalSurname = 4;
-  string maternalSurname = 5;
-  string documentNumber = 6;
-  string documentType = 7;
-  string createdAt = 8;
-  string updatedAt = 9;
-}
-
-message GetSubscribersByBusinessResponse {
-  repeated SubscriberByBusiness data = 1;
-  int32 total = 2;
-  int32 page = 3;
-  int32 limit = 4;
-  int32 totalPages = 5;
-}
-
-message ValidateParentCompanyUserRequest {
-  string personId = 1;
-  string subscriptionBussineId = 2;
-}
-
-message ValidateParentCompanyUserResponse {
-  bool isParentCompanyUser = 1;
-  optional string parentSubscriptionBussineId = 2;
 }

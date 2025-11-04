@@ -1,14 +1,6 @@
 import { Controller, ParseUUIDPipe } from '@nestjs/common';
 import { SubscriptionsBussinesService } from './services/subscriptions-bussines.service';
-import { GrpcMethod, MessagePattern, Payload } from '@nestjs/microservices';
-import {
-  CreateSubscriptionsBussineAlternalDto,
-  CreateSubscriptionsBussineAlternalResponseDto,
-  GetClientBusinessesDto,
-  GetClientBusinessesResponseDto,
-  ValidateParentAndGetBusinessesDto,
-  ValidateParentAndGetBusinessesResponseDto,
-} from './dto';
+import { MessagePattern, Payload } from '@nestjs/microservices';
 
 @Controller()
 export class SubscriptionsBussinesController {
@@ -41,32 +33,6 @@ export class SubscriptionsBussinesController {
   ): Promise<string> {
     return await this.subscriptionsBussinesService.findSubscriptionBussineIdBySubscriptionDetailId(
       subscriptionDetailId,
-    );
-  }
-
-  @GrpcMethod('SubscriptionsBussinesService', 'CreateAlternal')
-  async createAlternal(
-    dto: CreateSubscriptionsBussineAlternalDto,
-  ): Promise<CreateSubscriptionsBussineAlternalResponseDto> {
-    return this.subscriptionsBussinesService.createAlternal(dto);
-  }
-
-  @MessagePattern('subscriptionBussines.getClientBusinesses')
-  async getClientBusinesses(
-    @Payload()
-    getClientBusinessesDto: GetClientBusinessesDto,
-  ): Promise<GetClientBusinessesResponseDto> {
-    return this.subscriptionsBussinesService.getClientBusinesses(
-      getClientBusinessesDto,
-    );
-  }
-
-  @GrpcMethod('SubscriptionsBussinesService', 'ValidateParentAndGetBusinesses')
-  async validateParentAndGetBusinesses(
-    dto: ValidateParentAndGetBusinessesDto,
-  ): Promise<ValidateParentAndGetBusinessesResponseDto> {
-    return this.subscriptionsBussinesService.validateParentAndGetBusinesses(
-      dto,
     );
   }
 }

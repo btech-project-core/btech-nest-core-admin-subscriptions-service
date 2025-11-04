@@ -7,21 +7,11 @@ import { SubscriptionsBussinesCoreService } from './services/subscriptions-bussi
 import { SubscriptionsBussinesValidateService } from './services/subscriptions-bussines-validate.service';
 import { SubscriptionsBussinesCustomService } from './services/subscriptions-bussines-custom.service';
 import { SubscriptionsDetailModule } from 'src/subscriptions-detail/subscriptions-detail.module';
-import { Subscription } from 'src/subscriptions/entities/subscription.entity';
-import { SubscriptionsService } from 'src/subscriptions-services/entities/subscriptions-service.entity';
-import { CommonModule } from 'src/common/common.module';
-import { Subscriber } from 'src/subscribers/entities/subscriber.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([
-      SubscriptionsBussine,
-      Subscription,
-      SubscriptionsService,
-      Subscriber,
-    ]),
+    TypeOrmModule.forFeature([SubscriptionsBussine]),
     forwardRef(() => SubscriptionsDetailModule),
-    CommonModule,
   ],
   controllers: [SubscriptionsBussinesController],
   providers: [
