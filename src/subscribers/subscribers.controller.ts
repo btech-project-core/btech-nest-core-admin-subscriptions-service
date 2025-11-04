@@ -64,6 +64,16 @@ export class SubscribersController {
     );
   }
 
+  @MessagePattern('subscribers.findUserProfile')
+  async findUserProfileNats(
+    @Payload() data: FindUserByIdRequest,
+  ): Promise<UserProfileResponseDto | null> {
+    return await this.subscribersService.findOneBySubscriberIdWithLogin(
+      data.subscriberId,
+      data.service,
+    );
+  }
+
   @GrpcMethod('SubscribersService', 'FindUserProfile')
   async findUserProfile(
     data: FindUserByIdRequest,
