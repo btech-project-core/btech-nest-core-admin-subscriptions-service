@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable, Inject, forwardRef } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { RpcException } from '@nestjs/microservices';
@@ -22,7 +22,6 @@ export class SubscribersCoreService {
     private readonly subscriberRepository: Repository<Subscriber>,
     private readonly subscriptionsBussinesCustomService: SubscriptionsBussinesCustomService,
     private readonly subscriberRoleCoreService: SubscriberRoleCoreService,
-    @Inject(forwardRef(() => SubscriptionsDetailCustomService))
     private readonly subscriptionsDetailCustomService: SubscriptionsDetailCustomService,
     private readonly subscribersSubscriptionDetailCoreService: SubscribersSubscriptionDetailCoreService,
     private readonly rolesCustomService: RolesCustomService,
@@ -32,8 +31,14 @@ export class SubscribersCoreService {
   async create(
     createSubscriberDto: CreateSubscriberDto,
   ): Promise<CreateSubscriberResponseDto> {
-    const { username, password, naturalPersonId, domain, service } =
-      createSubscriberDto;
+    const {
+      username,
+      password,
+      naturalPersonId,
+      domain,
+      service,
+      role: roleCode,
+    } = createSubscriberDto;
     const subscriptionsBussine =
       await this.subscriptionsBussinesCustomService.findOneByDomainOrTenantId(
         domain,
@@ -44,7 +49,7 @@ export class SubscribersCoreService {
         subscriptionsBussine.subscriptionBussineId,
         service,
       );
-    const role = await this.rolesCustomService.findOneByCode('CLI');
+    const role = await this.rolesCustomService.findOneByCode(roleCode || 'CLI');
     // Crear subscriber básico
     const subscriber = this.subscriberRepository.create({
       username,

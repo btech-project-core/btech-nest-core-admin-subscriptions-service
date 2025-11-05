@@ -73,7 +73,6 @@ export class AdminPersonsService {
   async findOneJuridicalPersonByPersonId(
     findJuridicalPersonByPersonIdDto: FindJuridicalPersonByPersonIdDto,
   ): Promise<FindJuridicalPersonByPersonIdResponseDto> {
-    console.log(findJuridicalPersonByPersonIdDto);
     return this.client.send(
       'juridicalPersons.findByPersonId',
       findJuridicalPersonByPersonIdDto,

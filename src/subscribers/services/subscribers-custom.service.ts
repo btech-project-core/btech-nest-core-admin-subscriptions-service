@@ -7,8 +7,6 @@ import {
   FindOneSubscriberByIdResponseDto,
   GetSubscribersByBusinessDto,
   GetSubscribersByBusinessResponseDto,
-  CreateSubscriberResponseDto,
-  CreateSubscriberDto,
 } from '../dto';
 import {
   formatFindOneSubscriberIdResponse,
@@ -23,14 +21,11 @@ import {
   PaginationResponseDto,
 } from 'src/common/dto';
 import { formatSubscriberInfoResponse } from '../helpers';
-import { SubscriptionsBussine } from 'src/subscriptions-bussines/entities/subscriptions-bussine.entity';
-import { SubscriptionDetail } from 'src/subscriptions-detail/entities/subscription-detail.entity';
 import { SubscribersSubscriptionDetailCoreService } from 'src/subscribers-subscription-detail/services/subscribers-subscription-detail-core.service';
 import { SubscriberRoleCoreService } from './subscriber-role-core.service';
 import { RolesCustomService } from 'src/roles/services/roles-custom.service';
 import { SubscriptionsBussinesCustomService } from 'src/subscriptions-bussines/services/subscriptions-bussines-custom.service';
 import { SubscriptionsDetailCustomService } from 'src/subscriptions-detail/services/subscriptions-detail-custom.service';
-import * as bcrypt from 'bcryptjs';
 
 @Injectable()
 export class SubscribersCustomService {
@@ -284,6 +279,15 @@ export class SubscribersCustomService {
     };
   }
 
+  async findSubscribersByNaturalPersonId(
+    naturalPersonId: string,
+  ): Promise<Subscriber[]> {
+    return await this.subscriberRepository.find({
+      where: { naturalPersonId },
+      relations: ['subscriptionsBussine', 'subscribersSubscriptionDetails'],
+    });
+  }
+
   async getSubscribersByBusiness(
     dto: GetSubscribersByBusinessDto,
   ): Promise<PaginationResponseDto<GetSubscribersByBusinessResponseDto>> {
@@ -383,75 +387,6 @@ export class SubscribersCustomService {
       page,
       limit,
       totalPages: Math.ceil(total / limit),
-    };
-  }
-
-  async registerSubscriberAlternal(
-    createSubscriberDto: CreateSubscriberDto,
-  ): Promise<CreateSubscriberResponseDto> {
-    const { username, password, naturalPersonId, domain, service } =
-      createSubscriberDto;
-
-    const subscriptionsBussine =
-      await this.subscriptionsBussinesCustomService.findOneByDomainOrTenantId(
-        domain,
-      );
-
-    const subscriptionDetail =
-      await this.subscriptionsDetailCustomService.findOneByBussineIdAndService(
-        subscriptionsBussine.subscriptionBussineId,
-        service,
-      );
-
-    return this.createSubscriberAlternal(
-      username,
-      password,
-      naturalPersonId,
-      subscriptionsBussine,
-      subscriptionDetail,
-      createSubscriberDto.role || 'CLI',
-    );
-  }
-
-  async createSubscriberAlternal(
-    username: string,
-    password: string,
-    naturalPersonId: string,
-    subscriptionsBussine: SubscriptionsBussine,
-    subscriptionDetail: SubscriptionDetail,
-    roleCode?: string,
-  ): Promise<CreateSubscriberResponseDto> {
-    const role = await this.rolesCustomService.findOneByCode(
-      roleCode ? roleCode : 'CLI',
-    );
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    const subscriber = this.subscriberRepository.create({
-      username,
-      password: hashedPassword,
-      isConfirm: true,
-      naturalPersonId,
-      subscriptionsBussine,
-    });
-    const subscriberSaved = await this.subscriberRepository.save(subscriber);
-
-    const subscribersSubscriptionDetail =
-      await this.subscribersSubscriptionDetailCoreService.create(
-        subscriberSaved,
-        subscriptionDetail,
-        true,
-      );
-
-    await this.subscriberRoleCoreService.create(
-      subscribersSubscriptionDetail,
-      role,
-      true,
-    );
-
-    return {
-      subscriberId: subscriberSaved.subscriberId,
-      username: subscriberSaved.username,
     };
   }
 }

@@ -20,8 +20,6 @@ import {
   FindOneSubscriberByIdResponseDto,
   CreateSubscriberResponseDto,
   GetSubscribersByBusinessDto,
-  ValidateParentCompanyUserDto,
-  ValidateParentCompanyUserResponseDto,
 } from './dto';
 
 @Controller()
@@ -150,17 +148,5 @@ export class SubscribersController {
   @GrpcMethod('SubscribersService', 'GetSubscribersByBusiness')
   async getSubscribersByBusiness(data: GetSubscribersByBusinessDto) {
     return await this.subscribersService.getSubscribersByBusiness(data);
-  }
-
-  @GrpcMethod('SubscribersService', 'RegisterSubscriberAlternal')
-  async registerSubscriberAlternal(data: CreateSubscriberRequest) {
-    return await this.subscribersService.registerSubscriberAlternal(data);
-  }
-
-  @GrpcMethod('SubscribersService', 'ValidateParentCompanyUser')
-  async validateParentCompanyUser(
-    data: ValidateParentCompanyUserDto,
-  ): Promise<ValidateParentCompanyUserResponseDto> {
-    return await this.subscribersService.validateParentCompanyUser(data);
   }
 }
