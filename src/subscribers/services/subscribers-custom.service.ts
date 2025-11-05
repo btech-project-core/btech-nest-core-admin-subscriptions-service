@@ -264,13 +264,20 @@ export class SubscribersCustomService {
     };
   }
 
-  async findSubscribersByNaturalPersonId(
+  async findSubscriberByNaturalPersonId(
     naturalPersonId: string,
-  ): Promise<Subscriber[]> {
-    return await this.subscriberRepository.find({
+  ): Promise<Subscriber> {
+    const subscriber = await this.subscriberRepository.findOne({
       where: { naturalPersonId },
-      relations: ['subscriptionsBussine', 'subscribersSubscriptionDetails'],
     });
+
+    if (!subscriber)
+      throw new RpcException({
+        status: HttpStatus.NOT_FOUND,
+        message: 'Suscriptor no encontrado',
+      });
+
+    return subscriber;
   }
 
   async getSubscribersByBusiness(

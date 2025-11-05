@@ -21,6 +21,7 @@ import {
   CreateSubscriberResponseDto,
   GetSubscribersByBusinessDto,
 } from './dto';
+import { Subscriber } from './entities';
 
 @Controller()
 export class SubscribersController {
@@ -146,5 +147,14 @@ export class SubscribersController {
   @GrpcMethod('SubscribersService', 'GetSubscribersByBusiness')
   async getSubscribersByBusiness(data: GetSubscribersByBusinessDto) {
     return await this.subscribersService.getSubscribersByBusiness(data);
+  }
+
+  @MessagePattern('subscribers.findByNaturalPersonId')
+  async getSubscriberByNaturalPersonId(
+    naturalPersonId: string,
+  ): Promise<Subscriber> {
+    return await this.subscribersService.getSubscriberByNaturalPersonId(
+      naturalPersonId,
+    );
   }
 }

@@ -135,4 +135,12 @@ export class SubscribersService {
   ): Promise<PaginationResponseDto<GetSubscribersByBusinessResponseDto>> {
     return await this.subscribersCustomService.getSubscribersByBusiness(dto);
   }
+
+  async getSubscriberByNaturalPersonId(
+    naturalPersonId: string,
+  ): Promise<Subscriber> {
+    return await this.subscribersCustomService.findSubscriberByNaturalPersonId(
+      naturalPersonId,
+    );
+  }
 }
