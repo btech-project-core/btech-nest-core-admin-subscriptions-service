@@ -52,6 +52,8 @@ export class SubscribersController {
       data.username,
       data.domain,
       data.service,
+      data.role,
+      data.allowGlobalUser,
     );
   }
 

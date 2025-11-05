@@ -24,6 +24,14 @@ export class FindUserByUsernameRequest {
   @IsEnum(CodeService, { message: 'El campo service debe ser: VDI, STO, SUP' })
   @IsNotEmpty({ message: 'El campo service no puede estar vacío.' })
   service: CodeService;
+
+  @IsOptional()
+  @IsString({ message: 'El campo role debe ser una cadena de caracteres.' })
+  role?: string;
+
+  @IsOptional()
+  @IsBoolean({ message: 'El campo allowGlobalUser debe ser un booleano.' })
+  allowGlobalUser?: boolean;
 }
 
 export class FindUserByIdRequest {

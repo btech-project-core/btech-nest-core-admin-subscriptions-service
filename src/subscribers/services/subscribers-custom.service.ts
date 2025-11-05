@@ -202,6 +202,9 @@ export class SubscribersCustomService {
         'roleSubscriptionDetail',
       )
       .where('subscriber.username = :username', { username })
+      .andWhere('subscriber.isActive = :subscriberActive', {
+        subscriberActive: true,
+      })
       .andWhere(
         'subscribersSubscriptionDetails.subscriptionDetail = subscriptionDetail.subscriptionDetailId',
       )
@@ -236,6 +239,18 @@ export class SubscribersCustomService {
       );
     }
     const subscriber = await queryBuilder.getOne();
+    return subscriber || null;
+  }
+
+  async queryGlobalSubscriberByUsername(
+    username: string,
+  ): Promise<Subscriber | null> {
+    const subscriber = await this.subscriberRepository
+      .createQueryBuilder('subscriber')
+      .where('subscriber.username = :username', { username })
+      .andWhere('subscriber.subscriptionsBussineId IS NULL')
+      .andWhere('subscriber.isActive = :isActive', { isActive: true })
+      .getOne();
     return subscriber || null;
   }
 
