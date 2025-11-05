@@ -298,7 +298,14 @@ export class SubscribersCustomService {
   async getSubscribersByBusiness(
     dto: GetSubscribersByBusinessDto,
   ): Promise<PaginationResponseDto<GetSubscribersByBusinessResponseDto>> {
-    const { page = 1, limit = 10, ...filters } = dto;
+    const {
+      page = 1,
+      limit = 10,
+      search,
+      sortBy,
+      sortOrder = 'ASC',
+      ...filters
+    } = dto;
     const skip = (page - 1) * limit;
 
     const queryBuilder = this.subscriberRepository
@@ -378,7 +385,7 @@ export class SubscribersCustomService {
       naturalPersons.map((np) => [np.naturalPersonId, np]),
     );
 
-    const data = subscribers
+    let data = subscribers
       .map((subscriber) => {
         const naturalPerson = naturalPersonsMap.get(subscriber.naturalPersonId);
         if (!naturalPerson) return null;
@@ -388,12 +395,57 @@ export class SubscribersCustomService {
         (item): item is GetSubscribersByBusinessResponseDto => item !== null,
       );
 
+    // Aplicar búsqueda si se proporciona
+    if (search) {
+      const searchLower = search.toLowerCase().trim();
+      data = data.filter((item) => {
+        return (
+          item.fullName?.toLowerCase().includes(searchLower) ||
+          item.paternalSurname?.toLowerCase().includes(searchLower) ||
+          item.maternalSurname?.toLowerCase().includes(searchLower) ||
+          item.documentNumber?.toLowerCase().includes(searchLower) ||
+          item.documentType?.toLowerCase().includes(searchLower)
+        );
+      });
+    }
+
+    // Aplicar ordenamiento si se proporciona
+    if (sortBy) {
+      const validSortFields = [
+        'fullName',
+        'paternalSurname',
+        'maternalSurname',
+        'documentNumber',
+        'documentType',
+        'createdAt',
+        'updatedAt',
+      ] as const;
+
+      type SortField = (typeof validSortFields)[number];
+
+      if (validSortFields.includes(sortBy as SortField)) {
+        data.sort((a, b) => {
+          const aValue = (a[
+            sortBy as keyof GetSubscribersByBusinessResponseDto
+          ] || '') as string;
+          const bValue = (b[
+            sortBy as keyof GetSubscribersByBusinessResponseDto
+          ] || '') as string;
+
+          if (sortOrder === 'DESC') {
+            return bValue.localeCompare(aValue);
+          }
+          return aValue.localeCompare(bValue);
+        });
+      }
+    }
+
     return {
       data,
-      total,
+      total: search ? data.length : total,
       page,
       limit,
-      totalPages: Math.ceil(total / limit),
+      totalPages: Math.ceil((search ? data.length : total) / limit),
     };
   }
 }

@@ -232,6 +232,9 @@ message GetSubscribersByBusinessRequest {
   optional string service = 2;
   optional int32 page = 3;
   optional int32 limit = 4;
+  optional string search = 5;
+  optional string sortBy = 6;
+  optional string sortOrder = 7;
 }
 
 message SubscriberByBusiness {
