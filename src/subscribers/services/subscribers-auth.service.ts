@@ -27,14 +27,26 @@ export class SubscribersAuthService {
     username: string,
     domain: string,
     service: CodeService,
+    role?: string,
+    allowGlobalUser: boolean = true,
   ): Promise<FindOneUsernameResponseDto> {
+    let usernameToSearch = username;
+    // Buscar usuario regular del servicio
     let subscriber =
       await this.subscribersCustomService.querySubscriberByUsername(
-        username,
+        usernameToSearch,
         domain,
         service,
       );
-    if (!subscriber) {
+    // Buscar usuario global solo si está permitido
+    let globalSubscriber: Subscriber | null = null;
+    if (allowGlobalUser)
+      globalSubscriber =
+        await this.subscribersCustomService.queryGlobalSubscriberByUsername(
+          usernameToSearch,
+        );
+    // Si no encuentra ninguno, intentar con documento
+    if (!subscriber && !globalSubscriber) {
       const isValidWithDocumentNumber =
         await this.adminPersonsService.isValidDocumentNumberForUser(username);
       const newUsername =
@@ -42,28 +54,77 @@ export class SubscribersAuthService {
           isValidWithDocumentNumber.naturalPersonIds,
           service,
         );
+      usernameToSearch = newUsername;
+      // Buscar nuevamente con el username obtenido del documento
       subscriber =
         await this.subscribersCustomService.querySubscriberByUsername(
-          newUsername,
+          usernameToSearch,
           domain,
           service,
         );
+      if (allowGlobalUser) {
+        globalSubscriber =
+          await this.subscribersCustomService.queryGlobalSubscriberByUsername(
+            usernameToSearch,
+          );
+      }
     }
-    if (!subscriber)
-      throw new RpcException({
-        status: HttpStatus.NOT_FOUND,
-        message: `El usuario con el código de acceso: ${username} no existe`,
-      });
-    if (
-      subscriber.subscriptionsBussine.subscription.status !==
-      StatusSubscription.ACTIVE
-    )
-      throw new RpcException({
-        status: HttpStatus.UNAUTHORIZED,
-        message: 'El usuario se encuentra sin suscripción activa',
-      });
-
-    return formatFindOneUsernameResponse(subscriber);
+    // Si existe usuario regular
+    if (subscriber) {
+      if (!subscriber.isActive)
+        throw new RpcException({
+          status: HttpStatus.FORBIDDEN,
+          message: 'El usuario se encuentra inactivo',
+        });
+      if (
+        subscriber.subscriptionsBussine.subscription.status !==
+        StatusSubscription.ACTIVE
+      )
+        throw new RpcException({
+          status: HttpStatus.UNAUTHORIZED,
+          message: 'El usuario se encuentra sin suscripción activa',
+        });
+      // Si también existe como usuario global y se solicita role SYS
+      if (globalSubscriber && role === 'SYS') {
+        // Obtener roles del subscriber regular para combinarlos
+        const regularRoles =
+          subscriber.subscribersSubscriptionDetails?.flatMap(
+            (subDetail) =>
+              subDetail.subscriberRoles?.map((role) => role.role.code) || [],
+          ) || [];
+        const allRoles = [...new Set([...regularRoles, 'SYS'])];
+        // Retornar el usuario global con todos los roles
+        return formatFindOneUsernameResponse(
+          globalSubscriber,
+          allRoles,
+          true,
+          service,
+        );
+      }
+      // Si no se solicita role SYS, retornar el usuario regular
+      const additionalRoles = globalSubscriber ? ['SYS'] : [];
+      return formatFindOneUsernameResponse(
+        subscriber,
+        additionalRoles,
+        false,
+        service,
+      );
+    }
+    // Si solo existe como usuario global
+    if (globalSubscriber) {
+      // La validación de isActive ya se hizo en la query
+      return formatFindOneUsernameResponse(
+        globalSubscriber,
+        ['SYS'],
+        true,
+        service,
+      );
+    }
+    // Si no existe en ninguno
+    throw new RpcException({
+      status: HttpStatus.NOT_FOUND,
+      message: `El usuario con el código de acceso: ${username} no se encuentra registrado`,
+    });
   }
 
   async findOneBySubscriberIdWithLogin(
@@ -104,18 +165,25 @@ export class SubscribersAuthService {
         'roleSubscriptionDetails.subscriptionDetail',
         'roleSubscriptionDetail',
       )
-      .where('subscriber.subscriberId = :subscriberId', { subscriberId })
-      .andWhere('subscribersSubscriptionDetails.isActive = :isActive', {
-        isActive: true,
-      })
-      .andWhere('subscriberRoles.isActive = :roleActive', { roleActive: true });
+      .where('subscriber.subscriberId = :subscriberId', { subscriberId });
+
+    // Solo aplicar condiciones de relaciones si existen (usuarios no globales)
+    queryBuilder.andWhere(
+      '(subscribersSubscriptionDetails.isActive = :isActive OR subscriber.subscriptionsBussineId IS NULL)',
+      { isActive: true },
+    );
+    queryBuilder.andWhere(
+      '(subscriberRoles.isActive = :roleActive OR subscriber.subscriptionsBussineId IS NULL)',
+      { roleActive: true },
+    );
 
     if (service) {
-      queryBuilder.andWhere('subscriptionsService.code = :service', {
-        service,
-      });
       queryBuilder.andWhere(
-        'subscribersSubscriptionDetails.subscriptionDetail = subscriptionDetail.subscriptionDetailId',
+        '(subscriptionsService.code = :service OR subscriber.subscriptionsBussineId IS NULL)',
+        { service },
+      );
+      queryBuilder.andWhere(
+        '(subscribersSubscriptionDetails.subscriptionDetail = subscriptionDetail.subscriptionDetailId OR subscriber.subscriptionsBussineId IS NULL)',
       );
     }
 
@@ -130,15 +198,30 @@ export class SubscribersAuthService {
       await this.adminPersonsService.findOneNaturalPersonBySubscriberId(
         subscriber.naturalPersonId,
       );
-    const subscriptionPersonData =
-      await this.adminPersonsService.findOneSubscriptionPersonData(
-        subscriber.subscriptionsBussine.personId,
-      );
+
+    // Verificar si es usuario global
+    const isGlobalUser = subscriber.subscriptionsBussine === null;
+
+    let subscriptionPersonData: any;
+    if (isGlobalUser) {
+      // Usuario global: asignar datos mock
+      subscriptionPersonData = {
+        personId: 'global',
+        fullName: 'BTECH Desarrollo',
+      };
+    } else {
+      // Usuario regular: obtener datos reales
+      subscriptionPersonData =
+        await this.adminPersonsService.findOneSubscriptionPersonData(
+          subscriber.subscriptionsBussine.personId,
+        );
+    }
 
     return formatSubscriberWithLoginResponse(
       subscriber,
       subscriberNaturalPerson,
       subscriptionPersonData,
+      isGlobalUser,
     );
   }
 

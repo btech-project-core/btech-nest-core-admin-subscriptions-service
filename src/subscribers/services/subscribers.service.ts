@@ -50,11 +50,15 @@ export class SubscribersService {
     username: string,
     domain: string,
     service: CodeService,
+    role?: string,
+    allowGlobalUser?: boolean,
   ): Promise<FindOneUsernameResponseDto> {
     return await this.subscribersAuthService.findOneByUsername(
       username,
       domain,
       service,
+      role,
+      allowGlobalUser,
     );
   }
 

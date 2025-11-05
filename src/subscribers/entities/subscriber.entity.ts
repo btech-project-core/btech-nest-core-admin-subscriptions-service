@@ -83,6 +83,9 @@ export class Subscriber extends Timestamped {
   @Column({ type: 'boolean', default: false })
   isTwoFactorEnabled: boolean;
 
+  @Column({ type: 'boolean', default: true })
+  isActive: boolean;
+
   @OneToMany(
     () => SubscribersSubscriptionDetail,
     (subscribersSubscriptionDetail) => subscribersSubscriptionDetail.subscriber,
