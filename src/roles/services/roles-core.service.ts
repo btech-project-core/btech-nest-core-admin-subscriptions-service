@@ -41,10 +41,33 @@ export class RolesCoreService {
       term,
       isActive,
       hasPagination = true,
+      subscriptionBussineId,
+      subscriptionDetailId,
       ...paginationDto
     } = findAllRoleDto;
     const queryBuilder = this.roleRepository.createQueryBuilder('role');
-
+    if (subscriptionBussineId)
+      queryBuilder.andWhere(
+        'role.subscriptionBussineId = :subscriptionBussineId',
+        {
+          subscriptionBussineId,
+        },
+      );
+    if (subscriptionDetailId)
+      queryBuilder
+        .innerJoin('role.roleSubscriptionDetails', 'roleSubscriptionDetail')
+        .andWhere(
+          'roleSubscriptionDetail.subscriptionDetailId = :subscriptionDetailId',
+          {
+            subscriptionDetailId,
+          },
+        )
+        .andWhere(
+          'roleSubscriptionDetail.isActive = :roleSubscriptionDetailActive',
+          {
+            roleSubscriptionDetailActive: true,
+          },
+        );
     if (term)
       queryBuilder.andWhere(
         '(role.description LIKE :term OR role.code LIKE :term)',

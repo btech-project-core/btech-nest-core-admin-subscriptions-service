@@ -26,6 +26,12 @@ export class FindAllRoleDto extends PaginationDto {
     message: 'El ID del negocio de suscripción debe ser un texto válido',
   })
   subscriptionBussineId?: string;
+
+  @IsOptional()
+  @IsString({
+    message: 'El ID del detalle de suscripción debe ser un texto válido',
+  })
+  subscriptionDetailId?: string;
 }
 
 export class FindAllRoleResponseDto {
