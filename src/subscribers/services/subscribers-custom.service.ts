@@ -3,13 +3,23 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Brackets, Repository } from 'typeorm';
 import { RpcException } from '@nestjs/microservices';
 import { Subscriber } from '../entities';
-import { FindOneSubscriberByIdResponseDto } from '../dto';
-import { formatFindOneSubscriberIdResponse } from '../helpers';
+import {
+  FindOneSubscriberByIdResponseDto,
+  GetSubscribersByBusinessDto,
+  GetSubscribersByBusinessResponseDto,
+} from '../dto';
+import {
+  formatFindOneSubscriberIdResponse,
+  formatSubscribersByBusinessResponse,
+} from '../helpers';
 import { StatusSubscription } from 'src/subscriptions/enums';
 import { AdminPersonsService } from 'src/common/services';
 import { envs, SERVICE_NAME } from 'src/config';
 import { CodeService, CodeFeatures } from 'src/common/enums';
-import { SubscriberInfoResponseDto } from 'src/common/dto';
+import {
+  SubscriberInfoResponseDto,
+  PaginationResponseDto,
+} from 'src/common/dto';
 import { formatSubscriberInfoResponse } from '../helpers';
 import { SubscribersSubscriptionDetailCoreService } from 'src/subscribers-subscription-detail/services/subscribers-subscription-detail-core.service';
 import { SubscriberRoleCoreService } from './subscriber-role-core.service';
@@ -261,5 +271,107 @@ export class SubscribersCustomService {
       where: { naturalPersonId },
       relations: ['subscriptionsBussine', 'subscribersSubscriptionDetails'],
     });
+  }
+
+  async getSubscribersByBusiness(
+    dto: GetSubscribersByBusinessDto,
+  ): Promise<PaginationResponseDto<GetSubscribersByBusinessResponseDto>> {
+    const { page = 1, limit = 10, ...filters } = dto;
+    const skip = (page - 1) * limit;
+
+    const queryBuilder = this.subscriberRepository
+      .createQueryBuilder('subscriber')
+      .leftJoinAndSelect(
+        'subscriber.subscriptionsBussine',
+        'subscriptionsBussine',
+      )
+      .leftJoinAndSelect('subscriptionsBussine.subscription', 'subscription')
+      .leftJoinAndSelect(
+        'subscriptionsBussine.subscriptionDetail',
+        'subscriptionDetail',
+      )
+      .leftJoinAndSelect(
+        'subscriptionDetail.subscriptionsService',
+        'subscriptionsService',
+      )
+      .leftJoinAndSelect(
+        'subscriber.subscribersSubscriptionDetails',
+        'subscribersSubscriptionDetails',
+      )
+      .leftJoinAndSelect(
+        'subscribersSubscriptionDetails.subscriberRoles',
+        'subscriberRoles',
+      )
+      .leftJoinAndSelect('subscriberRoles.role', 'role')
+      .leftJoinAndSelect(
+        'role.roleSubscriptionDetails',
+        'roleSubscriptionDetails',
+      )
+      .leftJoinAndSelect(
+        'roleSubscriptionDetails.subscriptionDetail',
+        'roleSubscriptionDetail',
+      )
+      .where(
+        'subscriptionsBussine.subscriptionBussineId = :subscriptionBussineId',
+        { subscriptionBussineId: filters.subscriptionBussineId },
+      )
+      .andWhere('subscription.status = :status', {
+        status: StatusSubscription.ACTIVE,
+      })
+      .andWhere('subscribersSubscriptionDetails.isActive = :isActive', {
+        isActive: true,
+      })
+      .andWhere('subscriberRoles.isActive = :roleActive', { roleActive: true });
+
+    if (filters.service) {
+      queryBuilder.andWhere('subscriptionsService.code = :service', {
+        service: filters.service,
+      });
+    }
+
+    queryBuilder.orderBy('subscriber.createdAt', 'DESC');
+
+    const [subscribers, total] = await queryBuilder
+      .skip(skip)
+      .take(limit)
+      .getManyAndCount();
+
+    if (subscribers.length === 0) {
+      return {
+        data: [],
+        total: 0,
+        page,
+        limit,
+        totalPages: 0,
+      };
+    }
+
+    const naturalPersonIds = subscribers.map((sub) => sub.naturalPersonId);
+    const naturalPersons =
+      await this.adminPersonsService.findMultipleNaturalPersonsByIds({
+        naturalPersonIds,
+      });
+
+    const naturalPersonsMap = new Map(
+      naturalPersons.map((np) => [np.naturalPersonId, np]),
+    );
+
+    const data = subscribers
+      .map((subscriber) => {
+        const naturalPerson = naturalPersonsMap.get(subscriber.naturalPersonId);
+        if (!naturalPerson) return null;
+        return formatSubscribersByBusinessResponse(subscriber, naturalPerson);
+      })
+      .filter(
+        (item): item is GetSubscribersByBusinessResponseDto => item !== null,
+      );
+
+    return {
+      data,
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    };
   }
 }
