@@ -3,10 +3,11 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { RpcException } from '@nestjs/microservices';
 import { Subscriber } from '../entities/subscriber.entity';
-import { FindOneUsernameResponseDto } from '../dto/find-one-username.dto';
+import { FindOneUsernameResponseDto } from '../dto';
 import { formatFindOneUsernameResponse } from '../helpers/format-find-one-username-response.helper';
 import { formatSubscriberWithLoginResponse } from '../helpers/format-subscriber-with-login-response.helper';
 import { UserProfileResponseDto } from 'src/common/dto/user-profile.dto';
+import { PersonResponseDto } from 'src/common/dto/person.dto';
 import { StatusSubscription } from 'src/subscriptions/enums/status-subscription.enum';
 import { CodeService } from 'src/common/enums/code-service.enum';
 import { AdminPersonsService } from 'src/common/services/admin-persons.service';
@@ -133,7 +134,6 @@ export class SubscribersAuthService {
   ): Promise<UserProfileResponseDto | null> {
     const queryBuilder =
       this.subscriberRepository.createQueryBuilder('subscriber');
-
     queryBuilder
       .leftJoinAndSelect(
         'subscriber.subscriptionsBussine',
@@ -166,7 +166,6 @@ export class SubscribersAuthService {
         'roleSubscriptionDetail',
       )
       .where('subscriber.subscriberId = :subscriberId', { subscriberId });
-
     // Solo aplicar condiciones de relaciones si existen (usuarios no globales)
     queryBuilder.andWhere(
       '(subscribersSubscriptionDetails.isActive = :isActive OR subscriber.subscriptionsBussineId IS NULL)',
@@ -176,7 +175,6 @@ export class SubscribersAuthService {
       '(subscriberRoles.isActive = :roleActive OR subscriber.subscriptionsBussineId IS NULL)',
       { roleActive: true },
     );
-
     if (service) {
       queryBuilder.andWhere(
         '(subscriptionsService.code = :service OR subscriber.subscriptionsBussineId IS NULL)',
@@ -186,37 +184,26 @@ export class SubscribersAuthService {
         '(subscribersSubscriptionDetails.subscriptionDetail = subscriptionDetail.subscriptionDetailId OR subscriber.subscriptionsBussineId IS NULL)',
       );
     }
-
     const subscriber = await queryBuilder.getOne();
     if (!subscriber)
       throw new RpcException({
         status: HttpStatus.NOT_FOUND,
         message: `El usuario no se encuentra registrado`,
       });
-
     const subscriberNaturalPerson =
       await this.adminPersonsService.findOneNaturalPersonBySubscriberId(
         subscriber.naturalPersonId,
       );
-
     // Verificar si es usuario global
     const isGlobalUser = subscriber.subscriptionsBussine === null;
-
-    let subscriptionPersonData: any;
-    if (isGlobalUser) {
-      // Usuario global: asignar datos mock
-      subscriptionPersonData = {
-        personId: 'global',
-        fullName: 'BTECH Desarrollo',
-      };
-    } else {
-      // Usuario regular: obtener datos reales
-      subscriptionPersonData =
-        await this.adminPersonsService.findOneSubscriptionPersonData(
+    const subscriptionPersonData: PersonResponseDto = isGlobalUser
+      ? {
+          personId: 'global',
+          fullName: 'BTECH Desarrollo',
+        }
+      : await this.adminPersonsService.findOneSubscriptionPersonData(
           subscriber.subscriptionsBussine.personId,
         );
-    }
-
     return formatSubscriberWithLoginResponse(
       subscriber,
       subscriberNaturalPerson,

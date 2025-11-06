@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable, Inject, forwardRef } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Brackets, Repository } from 'typeorm';
 import { RpcException } from '@nestjs/microservices';
@@ -7,10 +7,12 @@ import {
   FindOneSubscriberByIdResponseDto,
   GetSubscribersByBusinessDto,
   GetSubscribersByBusinessResponseDto,
+  FindByNaturalPersonIdResponseDto,
 } from '../dto';
 import {
   formatFindOneSubscriberIdResponse,
   formatSubscribersByBusinessResponse,
+  formatFindByNaturalPersonIdResponse,
 } from '../helpers';
 import { StatusSubscription } from 'src/subscriptions/enums';
 import { AdminPersonsService } from 'src/common/services';
@@ -21,11 +23,6 @@ import {
   PaginationResponseDto,
 } from 'src/common/dto';
 import { formatSubscriberInfoResponse } from '../helpers';
-import { SubscribersSubscriptionDetailCoreService } from 'src/subscribers-subscription-detail/services/subscribers-subscription-detail-core.service';
-import { SubscriberRoleCoreService } from './subscriber-role-core.service';
-import { RolesCustomService } from 'src/roles/services/roles-custom.service';
-import { SubscriptionsBussinesCustomService } from 'src/subscriptions-bussines/services/subscriptions-bussines-custom.service';
-import { SubscriptionsDetailCustomService } from 'src/subscriptions-detail/services/subscriptions-detail-custom.service';
 
 @Injectable()
 export class SubscribersCustomService {
@@ -33,12 +30,6 @@ export class SubscribersCustomService {
     @InjectRepository(Subscriber)
     private readonly subscriberRepository: Repository<Subscriber>,
     private readonly adminPersonsService: AdminPersonsService,
-    private readonly subscribersSubscriptionDetailCoreService: SubscribersSubscriptionDetailCoreService,
-    private readonly subscriberRoleCoreService: SubscriberRoleCoreService,
-    private readonly rolesCustomService: RolesCustomService,
-    private readonly subscriptionsBussinesCustomService: SubscriptionsBussinesCustomService,
-    @Inject(forwardRef(() => SubscriptionsDetailCustomService))
-    private readonly subscriptionsDetailCustomService: SubscriptionsDetailCustomService,
   ) {}
 
   async findOneBySubscriberId(
@@ -293,6 +284,56 @@ export class SubscribersCustomService {
       });
 
     return subscriber;
+  }
+
+  async findByNaturalPersonId(
+    naturalPersonId: string,
+    service: CodeService,
+  ): Promise<FindByNaturalPersonIdResponseDto> {
+    const queryBuilder =
+      this.subscriberRepository.createQueryBuilder('subscriber');
+    queryBuilder
+      .leftJoinAndSelect(
+        'subscriber.subscriptionsBussine',
+        'subscriptionsBussine',
+      )
+      .leftJoinAndSelect(
+        'subscriptionsBussine.subscriptionDetail',
+        'subscriptionDetail',
+      )
+      .leftJoinAndSelect(
+        'subscriptionDetail.subscriptionsService',
+        'subscriptionsService',
+      )
+      .leftJoinAndSelect(
+        'subscriber.subscribersSubscriptionDetails',
+        'subscribersSubscriptionDetails',
+      )
+      .leftJoinAndSelect(
+        'subscribersSubscriptionDetails.subscriberRoles',
+        'subscriberRoles',
+      )
+      .leftJoinAndSelect('subscriberRoles.role', 'role')
+      .where('subscriber.naturalPersonId = :naturalPersonId', {
+        naturalPersonId,
+      })
+      .andWhere('subscribersSubscriptionDetails.isActive = :isActive', {
+        isActive: true,
+      })
+      .andWhere('subscriberRoles.isActive = :roleActive', {
+        roleActive: true,
+      })
+      .andWhere('subscriptionsService.code = :service', { service })
+      .andWhere(
+        'subscribersSubscriptionDetails.subscriptionDetail = subscriptionDetail.subscriptionDetailId',
+      );
+    const subscriber = await queryBuilder.getOne();
+    if (!subscriber)
+      throw new RpcException({
+        status: HttpStatus.NOT_FOUND,
+        message: 'Suscriptor no encontrado',
+      });
+    return formatFindByNaturalPersonIdResponse(subscriber);
   }
 
   async getSubscribersByBusiness(

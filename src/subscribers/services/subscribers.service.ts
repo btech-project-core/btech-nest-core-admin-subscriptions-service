@@ -14,6 +14,7 @@ import {
   CreateSubscriberResponseDto,
   GetSubscribersByBusinessDto,
   GetSubscribersByBusinessResponseDto,
+  FindByNaturalPersonIdResponseDto,
 } from '../dto';
 import { CodeService } from 'src/common/enums';
 import { SubscribersCoreService } from './subscribers-core.service';
@@ -140,11 +141,13 @@ export class SubscribersService {
     return await this.subscribersCustomService.getSubscribersByBusiness(dto);
   }
 
-  async getSubscriberByNaturalPersonId(
+  async findByNaturalPersonId(
     naturalPersonId: string,
-  ): Promise<Subscriber> {
-    return await this.subscribersCustomService.findSubscriberByNaturalPersonId(
+    service: CodeService,
+  ): Promise<FindByNaturalPersonIdResponseDto> {
+    return await this.subscribersCustomService.findByNaturalPersonId(
       naturalPersonId,
+      service,
     );
   }
 }

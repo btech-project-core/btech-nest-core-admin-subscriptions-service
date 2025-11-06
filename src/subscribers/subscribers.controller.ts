@@ -20,8 +20,9 @@ import {
   FindOneSubscriberByIdResponseDto,
   CreateSubscriberResponseDto,
   GetSubscribersByBusinessDto,
+  FindByNaturalPersonIdResponseDto,
+  FindByNaturalPersonIdDto,
 } from './dto';
-import { Subscriber } from './entities';
 
 @Controller()
 export class SubscribersController {
@@ -152,11 +153,12 @@ export class SubscribersController {
   }
 
   @MessagePattern('subscribers.findByNaturalPersonId')
-  async getSubscriberByNaturalPersonId(
-    naturalPersonId: string,
-  ): Promise<Subscriber> {
-    return await this.subscribersService.getSubscriberByNaturalPersonId(
-      naturalPersonId,
+  async findByNaturalPersonId(
+    @Payload() data: FindByNaturalPersonIdDto,
+  ): Promise<FindByNaturalPersonIdResponseDto> {
+    return await this.subscribersService.findByNaturalPersonId(
+      data.naturalPersonId,
+      data.service,
     );
   }
 }
