@@ -161,4 +161,14 @@ export class SubscribersController {
       data.service,
     );
   }
+
+  @MessagePattern('subscribers.getNaturalPersonIdsBySubscriptionDetail')
+  async getNaturalPersonIdsBySubscriptionDetail(
+    @Payload('subscriptionDetailId', ParseUUIDPipe)
+    subscriptionDetailId: string,
+  ): Promise<string[]> {
+    return await this.subscribersService.getNaturalPersonIdsBySubscriptionDetail(
+      subscriptionDetailId,
+    );
+  }
 }

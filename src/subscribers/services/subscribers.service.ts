@@ -150,4 +150,12 @@ export class SubscribersService {
       service,
     );
   }
+
+  async getNaturalPersonIdsBySubscriptionDetail(
+    subscriptionDetailId: string,
+  ): Promise<string[]> {
+    return await this.subscribersBulkService.getNaturalPersonIdsBySubscriptionDetail(
+      subscriptionDetailId,
+    );
+  }
 }
