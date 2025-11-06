@@ -19,7 +19,6 @@ import {
   FindOneUsernameResponseDto,
   FindOneSubscriberByIdResponseDto,
   CreateSubscriberResponseDto,
-  GetSubscribersByBusinessDto,
   FindByNaturalPersonIdResponseDto,
   FindByNaturalPersonIdDto,
 } from './dto';
@@ -145,11 +144,6 @@ export class SubscribersController {
     data: DeleteSubscriberRequest,
   ): Promise<{ message: string }> {
     return await this.subscribersService.deleteSubscriber(data.subscriberId);
-  }
-
-  @GrpcMethod('SubscribersService', 'GetSubscribersByBusiness')
-  async getSubscribersByBusiness(data: GetSubscribersByBusinessDto) {
-    return await this.subscribersService.getSubscribersByBusiness(data);
   }
 
   @MessagePattern('subscribers.findByNaturalPersonId')
