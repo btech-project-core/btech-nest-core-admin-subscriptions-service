@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+package roles;
+
+service RolesService {
+  rpc FindAllRoles(FindAllRolesRequest) returns (FindAllRolesResponse);
+}
+
+// ===== REQUESTS =====
+
+message FindAllRolesRequest {
+  optional string term = 1;
+  optional string roleLevel = 2;
+  optional bool isActive = 3;
+  optional bool hasPagination = 4;
+  optional string subscriptionBussineId = 5;
+  optional string subscriptionDetailId = 6;
+  optional int32 page = 7;
+  optional int32 limit = 8;
+}
+
+// ===== RESPONSES =====
+
+message FindAllRolesResponse {
+  repeated RoleData data = 1;
+  optional int32 total = 2;
+  optional int32 page = 3;
+  optional int32 limit = 4;
+  optional int32 totalPages = 5;
+}
+
+message RoleData {
+  string roleId = 1;
+  string code = 2;
+  string description = 3;
+  string roleLevel = 4;
+  string subscriptionBussineId = 5;
+  bool isActive = 6;
+}

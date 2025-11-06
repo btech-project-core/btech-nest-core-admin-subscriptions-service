@@ -45,11 +45,13 @@ async function bootstrap() {
       transport: Transport.GRPC,
       options: {
         package: [
+          'roles',
           'subscribers',
           'subscriptionDetailFeatures',
           'subscriberDesignePreference',
         ],
         protoPath: [
+          join(process.cwd(), 'src/common/proto/roles.proto'),
           join(process.cwd(), 'src/common/proto/subscribers.proto'),
           join(
             process.cwd(),

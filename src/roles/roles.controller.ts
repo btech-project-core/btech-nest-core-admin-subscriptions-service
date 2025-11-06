@@ -1,5 +1,5 @@
 import { Controller, ParseUUIDPipe } from '@nestjs/common';
-import { MessagePattern, Payload } from '@nestjs/microservices';
+import { GrpcMethod, MessagePattern, Payload } from '@nestjs/microservices';
 import { RolesService } from './services/roles.service';
 import { CreateRoleDto, CreateRoleResponseDto } from './dto/create-role.dto';
 import { UpdateRoleDto, UpdateRoleResponseDto } from './dto/update-role.dto';
@@ -53,5 +53,14 @@ export class RolesController {
     @Payload() updateStatusDto: UpdateRoleStatusDto,
   ): Promise<UpdateRoleStatusResponseDto> {
     return await this.rolesService.updateStatus(updateStatusDto);
+  }
+
+  @GrpcMethod('RolesService', 'FindAllRoles')
+  async findAllGrpc(
+    @Payload() findAllRoleDto: FindAllRoleDto,
+  ): Promise<
+    FindAllRoleResponseDto[] | PaginationResponseDto<FindAllRoleResponseDto>
+  > {
+    return await this.rolesService.findAll(findAllRoleDto);
   }
 }
