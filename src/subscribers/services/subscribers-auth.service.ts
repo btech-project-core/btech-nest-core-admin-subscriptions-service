@@ -225,6 +225,7 @@ export class SubscribersAuthService {
         message: `El subscriber con ID ${subscriberId} no existe`,
       });
     subscriber.password = hashedPassword;
+    if (!subscriber.isConfirm) subscriber.isConfirm = true;
     await this.subscriberRepository.save(subscriber);
     return {
       success: true,
