@@ -55,7 +55,7 @@ export class SubscribersCoreService {
     const subscriber = this.subscriberRepository.create({
       username,
       password,
-      isConfirm: isConfirm || true,
+      isConfirm: isConfirm ?? true,
       naturalPersonId,
       subscriptionsBussine,
     });
