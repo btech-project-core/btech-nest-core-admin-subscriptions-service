@@ -38,6 +38,7 @@ export class SubscribersCoreService {
       domain,
       service,
       role: roleCode,
+      isConfirm,
     } = createSubscriberDto;
     const subscriptionsBussine =
       await this.subscriptionsBussinesCustomService.findOneByDomainOrTenantId(
@@ -54,7 +55,7 @@ export class SubscribersCoreService {
     const subscriber = this.subscriberRepository.create({
       username,
       password,
-      isConfirm: true,
+      isConfirm: isConfirm || true,
       naturalPersonId,
       subscriptionsBussine,
     });

@@ -146,6 +146,10 @@ export class CreateSubscriberRequest {
   @IsOptional()
   @IsString({ message: 'El campo role debe ser una cadena de caracteres.' })
   role?: string;
+
+  @IsOptional()
+  @IsBoolean({ message: 'El campo isConfirm debe ser un booleano.' })
+  isConfirm?: boolean;
 }
 
 export class SetPasswordRequest {

@@ -4,6 +4,7 @@ import {
   Length,
   IsEnum,
   IsOptional,
+  IsBoolean,
 } from 'class-validator';
 import { CodeService } from 'src/common/enums/code-service.enum';
 
@@ -40,6 +41,10 @@ export class CreateSubscriberDto {
     message: 'El rol debe tener entre 1 y 35 caracteres',
   })
   role?: string;
+
+  @IsOptional()
+  @IsBoolean({ message: 'El campo isConfirm debe ser un booleano.' })
+  isConfirm?: boolean;
 }
 
 export class CreateSubscriberResponseDto {

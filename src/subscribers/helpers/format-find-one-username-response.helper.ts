@@ -25,6 +25,7 @@ export const formatFindOneUsernameResponse = (
       roles: allRoles,
       password: subscriber.password || undefined,
       twoFactorSecret: subscriber.twoFactorSecret || undefined,
+      isConfirm: subscriber.isConfirm,
       subscription: {
         subscriptionId: 'global',
         subscriptionBussineId: 'global',
@@ -42,6 +43,7 @@ export const formatFindOneUsernameResponse = (
     roles: allRoles,
     password: subscriber.password || undefined,
     twoFactorSecret: subscriber.twoFactorSecret || undefined,
+    isConfirm: subscriber.isConfirm,
     subscription: {
       subscriptionId:
         subscriber.subscriptionsBussine.subscription.subscriptionId,

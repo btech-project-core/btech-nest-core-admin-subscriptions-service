@@ -9,6 +9,7 @@ export class FindOneUsernameResponseDto {
   service: CodeService;
   twoFactorSecret?: string;
   password?: string;
+  isConfirm: boolean;
   subscription: FindOneUsernameSubscriptionResponsDto;
 }
 

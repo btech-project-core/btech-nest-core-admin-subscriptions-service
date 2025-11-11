@@ -24,6 +24,7 @@ message RegisterSubscriberRequest {
   string domain = 4;
   string service = 5;
   optional string role = 6;
+  optional bool isConfirm = 7;
 }
 
 message RegisterSubscriberResponse {
@@ -79,7 +80,8 @@ message LoginUserResponse {
   repeated string roles = 5;
   optional string twoFactorSecret = 6;
   optional string password = 7;
-  LoginSubscriptionData subscription = 8;
+  optional bool isConfirm = 8;
+  LoginSubscriptionData subscription = 9;
 }
 
 // ===== RESPONSE PARA 2FA =====
