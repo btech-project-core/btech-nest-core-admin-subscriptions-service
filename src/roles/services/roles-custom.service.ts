@@ -19,7 +19,6 @@ export class RolesCustomService {
     const queryBuilder = this.roleRepository
       .createQueryBuilder('role')
       .where('role.code = :code', { code: code.trim() });
-    console.log('subscriptionDetailId: ', subscriptionDetailId);
     if (subscriptionDetailId)
       queryBuilder
         .innerJoin('role.roleSubscriptionDetails', 'roleSubscriptionDetail')
