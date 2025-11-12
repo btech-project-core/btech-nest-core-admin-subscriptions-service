@@ -18,23 +18,24 @@ export class RolesCustomService {
   ): Promise<Role> {
     const queryBuilder = this.roleRepository
       .createQueryBuilder('role')
-      .innerJoin('role.roleSubscriptionDetails', 'roleSubscriptionDetail')
-      .innerJoin(
-        'roleSubscriptionDetail.subscriptionDetail',
-        'subscriptionDetail',
-      )
       .where('role.code = :code', { code: code.trim() });
+    console.log('subscriptionDetailId: ', subscriptionDetailId);
     if (subscriptionDetailId)
-      queryBuilder.andWhere(
-        'subscriptionDetail.subscriptionDetailId = :subscriptionDetailId',
-        {
-          subscriptionDetailId,
-        },
-      );
+      queryBuilder
+        .innerJoin('role.roleSubscriptionDetails', 'roleSubscriptionDetail')
+        .innerJoin(
+          'roleSubscriptionDetail.subscriptionDetail',
+          'subscriptionDetail',
+        )
+        .andWhere(
+          'subscriptionDetail.subscriptionDetailId = :subscriptionDetailId',
+          { subscriptionDetailId },
+        );
     if (subscriptionBussineId)
-      queryBuilder.andWhere('subscriptionBussineId = :subscriptionBussineId', {
-        subscriptionBussineId,
-      });
+      queryBuilder.andWhere(
+        'role.subscriptionBussineId = :subscriptionBussineId',
+        { subscriptionBussineId },
+      );
     const role = await queryBuilder.getOne();
     if (!role)
       throw new RpcException({
