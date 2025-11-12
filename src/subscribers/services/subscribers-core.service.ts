@@ -50,7 +50,10 @@ export class SubscribersCoreService {
         subscriptionsBussine.subscriptionBussineId,
         service,
       );
-    const role = await this.rolesCustomService.findOneByCode(roleCode || 'CLI');
+    const role = await this.rolesCustomService.findOneByCode(
+      roleCode ?? 'CLI',
+      targetSubscriptionDetail.subscriptionDetailId,
+    );
     // Crear subscriber básico
     const subscriber = this.subscriberRepository.create({
       username,

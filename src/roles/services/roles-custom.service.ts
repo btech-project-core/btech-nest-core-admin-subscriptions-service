@@ -11,9 +11,23 @@ export class RolesCustomService {
     private readonly roleRepository: Repository<Role>,
   ) {}
 
-  async findOneByCode(code: string): Promise<Role> {
+  async findOneByCode(
+    code: string,
+    subscriptionDetailId: string,
+  ): Promise<Role> {
     const role = await this.roleRepository.findOne({
-      where: { code: code.trim() },
+      where: {
+        code: code.trim(),
+        roleSubscriptionDetails: {
+          subscriptionDetail: {
+            subscriptionDetailId,
+          },
+        },
+      },
+      relations: [
+        'roleSubscriptionDetails',
+        'roleSubscriptionDetails.subscriptionDetail',
+      ],
     });
     if (!role)
       throw new RpcException({
