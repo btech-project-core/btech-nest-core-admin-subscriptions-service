@@ -23,7 +23,6 @@ export class RolesCustomService {
         'roleSubscriptionDetail.subscriptionDetail',
         'subscriptionDetail',
       )
-      .innerJoin('role.subscriptionBussine', 'subscriptionBussine')
       .where('role.code = :code', { code: code.trim() });
     if (subscriptionDetailId)
       queryBuilder.andWhere(
