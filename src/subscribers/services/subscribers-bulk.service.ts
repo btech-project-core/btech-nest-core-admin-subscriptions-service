@@ -188,7 +188,10 @@ export class SubscribersBulkService {
           'No se pueden enviar naturalPersonIds duplicados en la misma solicitud',
       });
     // Obtener el rol por defecto para usuarios nuevos
-    const defaultRole = await this.rolesCustomService.findOneByCode('SAD');
+    const defaultRole = await this.rolesCustomService.findOneByCode(
+      'SAD',
+      subscriptionsBussine.subscriptionBussineId,
+    );
 
     const subscribersToCreate = await Promise.all(
       naturalPersons.map(async (naturalPerson) => {

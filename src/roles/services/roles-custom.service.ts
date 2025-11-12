@@ -13,22 +13,30 @@ export class RolesCustomService {
 
   async findOneByCode(
     code: string,
-    subscriptionDetailId: string,
+    subscriptionDetailId?: string,
+    subscriptionBussineId?: string,
   ): Promise<Role> {
-    const role = await this.roleRepository.findOne({
-      where: {
-        code: code.trim(),
-        roleSubscriptionDetails: {
-          subscriptionDetail: {
-            subscriptionDetailId,
-          },
+    const queryBuilder = this.roleRepository
+      .createQueryBuilder('role')
+      .innerJoin('role.roleSubscriptionDetails', 'roleSubscriptionDetail')
+      .innerJoin(
+        'roleSubscriptionDetail.subscriptionDetail',
+        'subscriptionDetail',
+      )
+      .innerJoin('role.subscriptionBussine', 'subscriptionBussine')
+      .where('role.code = :code', { code: code.trim() });
+    if (subscriptionDetailId)
+      queryBuilder.andWhere(
+        'subscriptionDetail.subscriptionDetailId = :subscriptionDetailId',
+        {
+          subscriptionDetailId,
         },
-      },
-      relations: [
-        'roleSubscriptionDetails',
-        'roleSubscriptionDetails.subscriptionDetail',
-      ],
-    });
+      );
+    if (subscriptionBussineId)
+      queryBuilder.andWhere('subscriptionBussineId = :subscriptionBussineId', {
+        subscriptionBussineId,
+      });
+    const role = await queryBuilder.getOne();
     if (!role)
       throw new RpcException({
         status: HttpStatus.NOT_FOUND,
