@@ -1,35 +1,24 @@
 import { Module } from '@nestjs/common';
-import { RolesService } from './services/roles.service';
-import { RolesCoreService } from './services/roles-core.service';
-import { RolesValidateService } from './services/roles-validate.service';
-import { RolesCustomService } from './services/roles-custom.service';
-import { RoleSubscriptionDetailCoreService } from './services/role-subscription-detail-core.service';
-import { RoleSubscriptionDetailValidateService } from './services/role-subscription-detail-validate.service';
-import { RoleSubscriptionDetailCustomService } from './services/role-subscription-detail-custom.service';
-import { RolesController } from './roles.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Role } from './entities/role.entity';
 import { RoleSubscriptionDetail } from './entities/role-subscription-detail.entity';
+import { ROLES_CONTROLLERS } from './controllers';
+import { ROLES_CORE_SERVICES } from './services/core';
+import { ROLES_CUSTOM_SERVICES } from './services/custom';
+import { ROLES_VALIDATION_SERVICES } from './services/validation';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Role, RoleSubscriptionDetail])],
-  controllers: [RolesController],
+  controllers: [...ROLES_CONTROLLERS],
   providers: [
-    RolesService,
-    RolesCoreService,
-    RolesValidateService,
-    RolesCustomService,
-    RoleSubscriptionDetailCoreService,
-    RoleSubscriptionDetailValidateService,
-    RoleSubscriptionDetailCustomService,
+    ...ROLES_CORE_SERVICES,
+    ...ROLES_CUSTOM_SERVICES,
+    ...ROLES_VALIDATION_SERVICES,
   ],
   exports: [
-    RolesService,
-    RolesValidateService,
-    RolesCustomService,
-    RoleSubscriptionDetailCoreService,
-    RoleSubscriptionDetailValidateService,
-    RoleSubscriptionDetailCustomService,
+    ...ROLES_CORE_SERVICES,
+    ...ROLES_CUSTOM_SERVICES,
+    ...ROLES_VALIDATION_SERVICES,
   ],
 })
 export class RolesModule {}

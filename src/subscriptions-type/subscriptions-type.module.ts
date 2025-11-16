@@ -1,21 +1,22 @@
 import { Module } from '@nestjs/common';
-import { SubscriptionsTypeService } from './services/subscriptions-type.service';
-import { SubscriptionsTypeCoreService } from './services/subscriptions-type-core.service';
-import { SubscriptionsTypeValidateService } from './services/subscriptions-type-validate.service';
-import { SubscriptionsTypeCustomService } from './services/subscriptions-type-custom.service';
-import { SubscriptionsTypeController } from './subscriptions-type.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { SubscriptionsType } from './entities/subscriptions-type.entity';
+import { SUBSCRIPTIONS_TYPE_CONTROLLERS } from './controllers';
+import { SUBSCRIPTIONS_TYPE_CUSTOM_SERVICES } from './services/custom';
+import { SUBSCRIPTIONS_TYPE_VALIDATION_SERVICES } from './services/validation';
+import { SUBSCRIPTIONS_TYPE_CORE_SERVICES } from './services/core';
 
 @Module({
   imports: [TypeOrmModule.forFeature([SubscriptionsType])],
-  controllers: [SubscriptionsTypeController],
+  controllers: [...SUBSCRIPTIONS_TYPE_CONTROLLERS],
   providers: [
-    SubscriptionsTypeService,
-    SubscriptionsTypeCoreService,
-    SubscriptionsTypeValidateService,
-    SubscriptionsTypeCustomService,
+    ...SUBSCRIPTIONS_TYPE_CORE_SERVICES,
+    ...SUBSCRIPTIONS_TYPE_CUSTOM_SERVICES,
+    ...SUBSCRIPTIONS_TYPE_VALIDATION_SERVICES,
   ],
-  exports: [SubscriptionsTypeService, SubscriptionsTypeValidateService],
+  exports: [
+    ...SUBSCRIPTIONS_TYPE_VALIDATION_SERVICES,
+    ...SUBSCRIPTIONS_TYPE_CUSTOM_SERVICES,
+  ],
 })
 export class SubscriptionsTypeModule {}

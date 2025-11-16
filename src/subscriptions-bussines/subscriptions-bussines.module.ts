@@ -1,30 +1,27 @@
 import { Module, forwardRef } from '@nestjs/common';
-import { SubscriptionsBussinesController } from './subscriptions-bussines.controller';
-import { SubscriptionsBussine } from './entities/subscriptions-bussine.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { SubscriptionsBussinesService } from './services/subscriptions-bussines.service';
-import { SubscriptionsBussinesCoreService } from './services/subscriptions-bussines-core.service';
-import { SubscriptionsBussinesValidateService } from './services/subscriptions-bussines-validate.service';
-import { SubscriptionsBussinesCustomService } from './services/subscriptions-bussines-custom.service';
+import { SubscriptionsBussine } from './entities/subscriptions-bussine.entity';
 import { SubscriptionsDetailModule } from 'src/subscriptions-detail/subscriptions-detail.module';
+import { SUBSCRIPTIONS_BUSSINES_CONTROLLERS } from './controllers';
+import { SUBSCRIPTIONS_BUSSINES_CORE_SERVICES } from './services/core';
+import { SUBSCRIPTIONS_BUSSINES_CUSTOM_SERVICES } from './services/custom';
+import { SUBSCRIPTIONS_BUSSINES_VALIDATION_SERVICES } from './services/validation';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([SubscriptionsBussine]),
     forwardRef(() => SubscriptionsDetailModule),
   ],
-  controllers: [SubscriptionsBussinesController],
+  controllers: [...SUBSCRIPTIONS_BUSSINES_CONTROLLERS],
   providers: [
-    SubscriptionsBussinesService,
-    SubscriptionsBussinesCoreService,
-    SubscriptionsBussinesValidateService,
-    SubscriptionsBussinesCustomService,
+    ...SUBSCRIPTIONS_BUSSINES_CORE_SERVICES,
+    ...SUBSCRIPTIONS_BUSSINES_CUSTOM_SERVICES,
+    ...SUBSCRIPTIONS_BUSSINES_VALIDATION_SERVICES,
   ],
   exports: [
-    SubscriptionsBussinesService,
-    SubscriptionsBussinesValidateService,
-    SubscriptionsBussinesCoreService,
-    SubscriptionsBussinesCustomService,
+    ...SUBSCRIPTIONS_BUSSINES_CORE_SERVICES,
+    ...SUBSCRIPTIONS_BUSSINES_CUSTOM_SERVICES,
+    ...SUBSCRIPTIONS_BUSSINES_VALIDATION_SERVICES,
   ],
 })
 export class SubscriptionsBussinesModule {}

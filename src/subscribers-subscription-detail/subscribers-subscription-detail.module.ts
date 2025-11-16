@@ -1,26 +1,13 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { SubscribersSubscriptionDetail } from './entities/subscribers-subscription-detail.entity';
-import { SubscribersSubscriptionDetailService } from './services/subscribers-subscription-detail.service';
-import { SubscribersSubscriptionDetailCoreService } from './services/subscribers-subscription-detail-core.service';
-import { SubscribersSubscriptionDetailValidateService } from './services/subscribers-subscription-detail-validate.service';
-import { SubscribersSubscriptionDetailCustomService } from './services/subscribers-subscription-detail-custom.service';
-import { SubscribersSubscriptionDetailController } from './subscribers-subscription-detail.controller';
+import { SUBSCRIBERS_SUBSCRIPTION_DETAIL_CONTROLLERS } from './controllers';
+import { SUBSCRIBERS_SUBSCRIPTION_DETAIL_CORE_SERVICES } from './services/core';
 
 @Module({
   imports: [TypeOrmModule.forFeature([SubscribersSubscriptionDetail])],
-  controllers: [SubscribersSubscriptionDetailController],
-  providers: [
-    SubscribersSubscriptionDetailService,
-    SubscribersSubscriptionDetailCoreService,
-    SubscribersSubscriptionDetailValidateService,
-    SubscribersSubscriptionDetailCustomService,
-  ],
-  exports: [
-    SubscribersSubscriptionDetailService,
-    SubscribersSubscriptionDetailValidateService,
-    SubscribersSubscriptionDetailCustomService,
-    SubscribersSubscriptionDetailCoreService,
-  ],
+  controllers: [...SUBSCRIBERS_SUBSCRIPTION_DETAIL_CONTROLLERS],
+  providers: [...SUBSCRIBERS_SUBSCRIPTION_DETAIL_CORE_SERVICES],
+  exports: [...SUBSCRIBERS_SUBSCRIPTION_DETAIL_CORE_SERVICES],
 })
 export class SubscribersSubscriptionDetailModule {}

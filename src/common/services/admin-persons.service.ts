@@ -1,4 +1,3 @@
-import { MessagingService } from 'src/messaging/messaging.service';
 import { NaturalPersonResponseDto } from '../dto/natural-person.dto';
 import { PersonResponseDto } from '../dto/person.dto';
 import { Injectable } from '@nestjs/common';
@@ -14,10 +13,11 @@ import {
   FindJuridicalPersonByPersonIdDto,
   FindJuridicalPersonByPersonIdResponseDto,
 } from '../dto';
+import { NatsService } from 'src/communications/nats';
 
 @Injectable()
 export class AdminPersonsService {
-  constructor(private readonly client: MessagingService) {}
+  constructor(private readonly client: NatsService) {}
 
   async findOneNaturalPersonBySubscriberId(
     naturalPersonId: string,

@@ -1,15 +1,11 @@
 import { Module, forwardRef } from '@nestjs/common';
-import { SubscribersService } from './services/subscribers.service';
-import { SubscribersCoreService } from './services/subscribers-core.service';
-import { SubscribersAuthService } from './services/subscribers-auth.service';
-import { SubscribersValidateService } from './services/subscribers-validate.service';
-import { SubscribersCustomService } from './services/subscribers-custom.service';
-import { SubscribersBulkService } from './services/subscribers-bulk.service';
-import { SubscriberRoleCoreService } from './services/subscriber-role-core.service';
-import { SubscribersController } from './subscribers.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Subscriber } from './entities/subscriber.entity';
-import { SubscriberRole } from './entities/subscriber-role.entity';
+import { Subscriber, SubscriberRole } from './entities';
+import { SUBSCRIBERS_CONTROLLERS } from './controllers';
+import { SUBSCRIBERS_CORE_SERVICES } from './services/core';
+import { subscribersCustomProviders } from './services/custom';
+import { subscribersValidationProviders } from './services/validation';
+import { subscribersBulkProviders } from './services/bulk';
 import { CommonModule } from 'src/common/common.module';
 import { SubscriptionsBussinesModule } from 'src/subscriptions-bussines/subscriptions-bussines.module';
 import { RolesModule } from 'src/roles/roles.module';
@@ -25,22 +21,18 @@ import { SubscribersSubscriptionDetailModule } from 'src/subscribers-subscriptio
     SubscribersSubscriptionDetailModule,
     RolesModule,
   ],
-  controllers: [SubscribersController],
+  controllers: [...SUBSCRIBERS_CONTROLLERS],
   providers: [
-    SubscribersService,
-    SubscribersCoreService,
-    SubscribersAuthService,
-    SubscribersValidateService,
-    SubscribersCustomService,
-    SubscribersBulkService,
-    SubscriberRoleCoreService,
+    ...SUBSCRIBERS_CORE_SERVICES,
+    ...subscribersCustomProviders,
+    ...subscribersValidationProviders,
+    ...subscribersBulkProviders,
   ],
   exports: [
-    SubscribersService,
-    SubscribersValidateService,
-    SubscribersBulkService,
-    SubscribersCoreService,
-    SubscribersCustomService,
+    ...SUBSCRIBERS_CORE_SERVICES,
+    ...subscribersCustomProviders,
+    ...subscribersValidationProviders,
+    ...subscribersBulkProviders,
   ],
 })
 export class SubscribersModule {}

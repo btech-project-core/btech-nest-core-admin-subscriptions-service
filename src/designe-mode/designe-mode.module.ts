@@ -1,21 +1,19 @@
 import { Module } from '@nestjs/common';
-import { DesigneModeService } from './services/designe-mode.service';
-import { DesigneModeCoreService } from './services/designe-mode-core.service';
-import { DesigneModeValidateService } from './services/designe-mode-validate.service';
-import { DesigneModeCustomService } from './services/designe-mode-custom.service';
-import { DesigneModeController } from './designe-mode.controller';
-import { DesignerMode } from './entities/designe-mode.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { DesignerMode } from './entities/designe-mode.entity';
+import { DESIGNE_MODE_CONTROLLERS } from './controllers';
+import { DESIGNE_MODE_CORE_SERVICES } from './services/core';
+import { DESIGNE_MODE_CUSTOM_SERVICES } from './services/custom';
+import { DESIGNE_MODE_VALIDATION_SERVICES } from './services/validation';
 
 @Module({
   imports: [TypeOrmModule.forFeature([DesignerMode])],
-  controllers: [DesigneModeController],
+  controllers: [...DESIGNE_MODE_CONTROLLERS],
   providers: [
-    DesigneModeService,
-    DesigneModeCoreService,
-    DesigneModeValidateService,
-    DesigneModeCustomService,
+    ...DESIGNE_MODE_CORE_SERVICES,
+    ...DESIGNE_MODE_CUSTOM_SERVICES,
+    ...DESIGNE_MODE_VALIDATION_SERVICES,
   ],
-  exports: [DesigneModeService, DesigneModeValidateService],
+  exports: [...DESIGNE_MODE_VALIDATION_SERVICES],
 })
 export class DesigneModeModule {}

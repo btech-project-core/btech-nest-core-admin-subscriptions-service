@@ -1,0 +1,16 @@
+export * from './subscribers-find-with-natural-persons.service';
+export * from './subscribers-get-count-by-detail.service';
+export * from './subscribers-create-for-natural-persons.service';
+export * from './subscribers-bulk.service';
+
+import { SubscribersFindWithNaturalPersonsService } from './subscribers-find-with-natural-persons.service';
+import { SubscribersGetCountByDetailService } from './subscribers-get-count-by-detail.service';
+import { SubscribersCreateForNaturalPersonsService } from './subscribers-create-for-natural-persons.service';
+import { SubscribersBulkService } from './subscribers-bulk.service';
+
+export const subscribersBulkProviders = [
+  SubscribersFindWithNaturalPersonsService,
+  SubscribersGetCountByDetailService,
+  SubscribersCreateForNaturalPersonsService,
+  SubscribersBulkService,
+];

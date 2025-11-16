@@ -1,14 +1,12 @@
 import { Module, forwardRef } from '@nestjs/common';
-import { SubscriptionsDetailController } from './subscriptions-detail.controller';
-import { SubscriptionDetail } from './entities/subscription-detail.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { SubscriptionDetail } from './entities/subscription-detail.entity';
 import { SubscriptionDetailFeatures } from './entities/subscription-detail-features.entity';
-import { SubscriptionsDetailService } from './services/subscriptions-detail.service';
-import { SubscriptionsDetailFeaturesService } from './services/subscriptions-detail-features.service';
 import { SubscriptionsBussinesModule } from 'src/subscriptions-bussines/subscriptions-bussines.module';
 import { SubscriptionsServicesModule } from 'src/subscriptions-services/subscriptions-services.module';
-import { SubscriptionsDetailCoreService } from './services/subscriptions-detail-core.service';
-import { SubscriptionsDetailCustomService } from './services/subscriptions-detail-custom.service';
+import { SUBSCRIPTIONS_DETAIL_CONTROLLERS } from './controllers';
+import { SUBSCRIPTIONS_DETAIL_CORE_SERVICES } from './services/core';
+import { SUBSCRIPTIONS_DETAIL_CUSTOM_SERVICES } from './services/custom';
 
 @Module({
   imports: [
@@ -16,18 +14,14 @@ import { SubscriptionsDetailCustomService } from './services/subscriptions-detai
     forwardRef(() => SubscriptionsBussinesModule),
     SubscriptionsServicesModule,
   ],
-  controllers: [SubscriptionsDetailController],
+  controllers: [...SUBSCRIPTIONS_DETAIL_CONTROLLERS],
   providers: [
-    SubscriptionsDetailService,
-    SubscriptionsDetailFeaturesService,
-    SubscriptionsDetailCoreService,
-    SubscriptionsDetailCustomService,
+    ...SUBSCRIPTIONS_DETAIL_CORE_SERVICES,
+    ...SUBSCRIPTIONS_DETAIL_CUSTOM_SERVICES,
   ],
   exports: [
-    SubscriptionsDetailService,
-    SubscriptionsDetailCustomService,
-    SubscriptionsDetailFeaturesService,
-    SubscriptionsDetailFeaturesService,
+    ...SUBSCRIPTIONS_DETAIL_CORE_SERVICES,
+    ...SUBSCRIPTIONS_DETAIL_CUSTOM_SERVICES,
   ],
 })
 export class SubscriptionsDetailModule {}

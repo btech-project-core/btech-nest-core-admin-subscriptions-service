@@ -11,7 +11,7 @@ import {
   UpdateRoleStatusResponseDto,
 } from '../dto/update-role-status.dto';
 import { PaginationResponseDto } from 'src/common/dto/pagination.dto';
-import { RolesCoreService } from './roles-core.service';
+import { RolesCoreService } from './core/roles-core.service';
 
 @Injectable()
 export class RolesService {

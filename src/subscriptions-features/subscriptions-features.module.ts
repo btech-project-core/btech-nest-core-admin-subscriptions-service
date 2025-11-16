@@ -1,20 +1,19 @@
 import { Module } from '@nestjs/common';
-import { SubscriptionsFeaturesController } from './subscriptions-features.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { SubscriptionFeatures } from './entities/subscription-features.entity';
-import { SubscriptionsFeaturesService } from './services/subscriptions-features.service';
-import { SubscriptionsFeaturesValidateService } from './services/subscriptions-features-validate.service';
-import { SubscriptionsFeaturesCustomService } from './services/subscriptions-features-custom.service';
-import { SubscriptionsFeaturesCoreService } from './services/subscriptions-features-core.service';
+import { SUBSCRIPTIONS_FEATURES_CONTROLLERS } from './controllers';
+import { SUBSCRIPTIONS_FEATURES_CORE_SERVICES } from './services/core';
+import { SUBSCRIPTIONS_FEATURES_CUSTOM_SERVICES } from './services/custom';
+import { SUBSCRIPTIONS_FEATURES_VALIDATION_SERVICES } from './services/validation';
 
 @Module({
   imports: [TypeOrmModule.forFeature([SubscriptionFeatures])],
-  controllers: [SubscriptionsFeaturesController],
+  controllers: [...SUBSCRIPTIONS_FEATURES_CONTROLLERS],
   providers: [
-    SubscriptionsFeaturesService,
-    SubscriptionsFeaturesCoreService,
-    SubscriptionsFeaturesCustomService,
-    SubscriptionsFeaturesValidateService,
+    ...SUBSCRIPTIONS_FEATURES_CORE_SERVICES,
+    ...SUBSCRIPTIONS_FEATURES_CUSTOM_SERVICES,
+    ...SUBSCRIPTIONS_FEATURES_VALIDATION_SERVICES,
   ],
+  exports: [...SUBSCRIPTIONS_FEATURES_VALIDATION_SERVICES],
 })
 export class SubscriptionsFeaturesModule {}

@@ -1,16 +1,15 @@
 import { Module } from '@nestjs/common';
-import { SubscriptionsService } from './services/subscriptions.service';
-import { SubscriptionsCoreService } from './services/subscriptions-core.service';
-import { SubscriptionsValidateService } from './services/subscriptions-validate.service';
-import { SubscriptionsCustomService } from './services/subscriptions-custom.service';
-import { SubscriptionsBulkService } from './services/subscriptions-bulk.service';
-import { SubscriptionsController } from './subscriptions.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Subscription } from './entities/subscription.entity';
 import { CommonModule } from 'src/common/common.module';
 import { SubscriptionsBussinesModule } from 'src/subscriptions-bussines/subscriptions-bussines.module';
 import { SubscriptionsServicesModule } from 'src/subscriptions-services/subscriptions-services.module';
 import { SubscribersModule } from 'src/subscribers/subscribers.module';
+import { SUBSCRIPTIONS_CONTROLLERS } from './controllers';
+import { SUBSCRIPTIONS_CORE_SERVICES } from './services/core';
+import { SUBSCRIPTIONS_CUSTOM_SERVICES } from './services/custom';
+import { SUBSCRIPTIONS_VALIDATION_SERVICES } from './services/validation';
+import { SUBSCRIPTIONS_BULK_SERVICES } from './services/bulk';
 
 @Module({
   imports: [
@@ -20,14 +19,18 @@ import { SubscribersModule } from 'src/subscribers/subscribers.module';
     SubscriptionsServicesModule,
     SubscribersModule,
   ],
-  controllers: [SubscriptionsController],
+  controllers: [...SUBSCRIPTIONS_CONTROLLERS],
   providers: [
-    SubscriptionsService,
-    SubscriptionsCoreService,
-    SubscriptionsValidateService,
-    SubscriptionsCustomService,
-    SubscriptionsBulkService,
+    ...SUBSCRIPTIONS_CORE_SERVICES,
+    ...SUBSCRIPTIONS_CUSTOM_SERVICES,
+    ...SUBSCRIPTIONS_VALIDATION_SERVICES,
+    ...SUBSCRIPTIONS_BULK_SERVICES,
   ],
-  exports: [SubscriptionsService, SubscriptionsValidateService],
+  exports: [
+    ...SUBSCRIPTIONS_CORE_SERVICES,
+    ...SUBSCRIPTIONS_CUSTOM_SERVICES,
+    ...SUBSCRIPTIONS_VALIDATION_SERVICES,
+    ...SUBSCRIPTIONS_BULK_SERVICES,
+  ],
 })
 export class SubscriptionsModule {}
