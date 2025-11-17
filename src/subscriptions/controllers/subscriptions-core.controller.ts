@@ -6,7 +6,9 @@ import { SubscriptionsCoreService } from '../services/core';
 
 @Controller()
 export class SubscriptionsCoreController {
-  constructor(private readonly subscriptionsCoreService: SubscriptionsCoreService) {}
+  constructor(
+    private readonly subscriptionsCoreService: SubscriptionsCoreService,
+  ) {}
 
   @MessagePattern('subscriptions.create')
   create(@Payload() createSubscriptionDto: CreateSubscriptionDto) {

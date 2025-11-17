@@ -10,6 +10,7 @@ import { SUBSCRIPTIONS_CORE_SERVICES } from './services/core';
 import { SUBSCRIPTIONS_CUSTOM_SERVICES } from './services/custom';
 import { SUBSCRIPTIONS_VALIDATION_SERVICES } from './services/validation';
 import { SUBSCRIPTIONS_BULK_SERVICES } from './services/bulk';
+import { SUBSCRIPTIONS_DOCUMENT_SERVICES } from './services/document';
 
 @Module({
   imports: [
@@ -25,12 +26,14 @@ import { SUBSCRIPTIONS_BULK_SERVICES } from './services/bulk';
     ...SUBSCRIPTIONS_CUSTOM_SERVICES,
     ...SUBSCRIPTIONS_VALIDATION_SERVICES,
     ...SUBSCRIPTIONS_BULK_SERVICES,
+    ...SUBSCRIPTIONS_DOCUMENT_SERVICES,
   ],
   exports: [
     ...SUBSCRIPTIONS_CORE_SERVICES,
     ...SUBSCRIPTIONS_CUSTOM_SERVICES,
     ...SUBSCRIPTIONS_VALIDATION_SERVICES,
     ...SUBSCRIPTIONS_BULK_SERVICES,
+    ...SUBSCRIPTIONS_DOCUMENT_SERVICES,
   ],
 })
 export class SubscriptionsModule {}
