@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { SubscriptionDetailDesigneModeValidateOnlyOnePrimaryService } from './subscription-detail-designe-mode-validate-only-one-primary.service';
 import { SubscriptionDetailDesigneModeValidateUniqueModeCombinationService } from './subscription-detail-designe-mode-validate-unique-mode-combination.service';
-import { SubscriptionDetailDesigneModeValidateSystemDefaultRequirementsService } from './subscription-detail-designe-mode-validate-system-default-requirements.service';
+import { SubscriptionDetailDesigneModeValidateSystemDefaultRequirementsService } from './subscription-detail-designe-mode-validate-default-requirements.service';
 
 @Injectable()
 export class SubscriptionDetailDesigneModeValidationService {

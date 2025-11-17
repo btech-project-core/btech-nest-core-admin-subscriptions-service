@@ -2,9 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { SubscriptionDetailDesigneMode } from 'src/subscription-detail-designe-mode/entities/subscription-detail-designe-mode.entity';
 import { SubscriberDesignePreference } from '../../entities/subscriber-designe-preference.entity';
 import { ValidateSubscriberDesignResponseDto } from '../../dto/validate-subscriber-design.dto';
-import { SubscriberDesignePreferenceValidateSubscriptionDetailDesigneModeService } from './subscriber-designe-preference-validate-subscription-detail-designe-mode.service';
 import { SubscriberDesignePreferenceValidateDetailsService } from './subscriber-designe-preference-validate-details.service';
 import { SubscriberDesignePreferenceValidateDesignService } from './subscriber-designe-preference-validate-design.service';
+import { SubscriberDesignePreferenceValidateSubscriptionDetailDesigneModeService } from './subscriber-designe-preference-validate-subscription-detail.service';
 
 @Injectable()
 export class SubscriberDesignePreferenceValidationService {
