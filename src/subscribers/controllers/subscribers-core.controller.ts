@@ -1,5 +1,5 @@
 import { Controller } from '@nestjs/common';
-import { GrpcMethod } from '@nestjs/microservices';
+import { GrpcMethod, MessagePattern, Payload } from '@nestjs/microservices';
 import {
   CreateSubscriberRequest,
   UpdateUserRequest,
@@ -14,6 +14,13 @@ export class SubscribersCoreController {
   constructor(
     private readonly subscribersCoreService: SubscribersCoreService,
   ) {}
+
+  @MessagePattern('subscribers.remove')
+  async delete(
+    @Payload('subscriberId') subscriberId: string,
+  ): Promise<{ message: string }> {
+    return await this.subscribersCoreService.delete(subscriberId);
+  }
 
   @GrpcMethod('SubscribersService', 'RegisterSubscriber')
   async registerSubscriber(
