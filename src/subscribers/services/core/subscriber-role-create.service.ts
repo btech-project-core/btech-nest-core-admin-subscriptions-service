@@ -1,6 +1,6 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { QueryRunner, Repository } from 'typeorm';
 import { RpcException } from '@nestjs/microservices';
 import { SubscriberRole } from '../../entities/subscriber-role.entity';
 import { SubscribersSubscriptionDetail } from 'src/subscribers-subscription-detail/entities/subscribers-subscription-detail.entity';
@@ -20,7 +20,11 @@ export class SubscriberRoleCreateService {
     subscribersSubscriptionDetail: SubscribersSubscriptionDetail,
     role: Role,
     isActive: boolean = true,
+    queryRunner?: QueryRunner,
   ): Promise<SubscriberRole> {
+    const repository = queryRunner
+      ? queryRunner.manager.getRepository(SubscriberRole)
+      : this.subscriberRoleRepository;
     // Validar si el rol requiere asociación con el servicio
     if (role.roleLevel === RoleLevel.SERVICE) {
       const isValidForService =
@@ -34,11 +38,11 @@ export class SubscriberRoleCreateService {
           message: `El rol '${role.description}' con nivel SERVICE no está habilitado para este servicio. Debe configurar la relación rol-servicio primero.`,
         });
     }
-    const subscriberRole = this.subscriberRoleRepository.create({
+    const subscriberRole = repository.create({
       subscribersSubscriptionDetail,
       role,
       isActive,
     });
-    return await this.subscriberRoleRepository.save(subscriberRole);
+    return await repository.save(subscriberRole);
   }
 }

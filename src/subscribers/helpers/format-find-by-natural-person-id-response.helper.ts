@@ -3,12 +3,14 @@ import { FindByNaturalPersonIdResponseDto } from '../dto';
 
 export const formatFindByNaturalPersonIdResponse = (
   subscriber: Subscriber,
+  isAssignedToService: boolean,
 ): FindByNaturalPersonIdResponseDto => {
-  const roles =
-    subscriber.subscribersSubscriptionDetails?.flatMap(
-      (subDetail) =>
-        subDetail.subscriberRoles?.map((role) => role.role.code) || [],
-    ) || [];
+  const roles = isAssignedToService
+    ? subscriber.subscribersSubscriptionDetails?.flatMap(
+        (subDetail) =>
+          subDetail.subscriberRoles?.map((role) => role.role.code) || [],
+      ) || []
+    : null;
 
   return {
     subscriberId: subscriber.subscriberId,
@@ -16,5 +18,6 @@ export const formatFindByNaturalPersonIdResponse = (
     isTwoFactorEnabled: subscriber.isTwoFactorEnabled,
     roles: roles,
     hasPassword: subscriber.password !== null,
+    isAssignedToService: isAssignedToService,
   };
 };

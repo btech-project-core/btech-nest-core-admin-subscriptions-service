@@ -18,6 +18,20 @@ export class SubscribersFindByNaturalPersonIdService {
     naturalPersonId: string,
     service: CodeService,
   ): Promise<FindByNaturalPersonIdResponseDto> {
+    // First, find the subscriber by naturalPersonId without service filter
+    const subscriber = await this.subscriberRepository.findOne({
+      where: { naturalPersonId },
+      select: ['subscriberId', 'username', 'isTwoFactorEnabled', 'password'],
+    });
+
+    if (!subscriber) {
+      throw new RpcException({
+        status: HttpStatus.NOT_FOUND,
+        message: 'Suscriptor no encontrado',
+      });
+    }
+
+    // Then, check if the subscriber is assigned to the specific service
     const queryBuilder =
       this.subscriberRepository.createQueryBuilder('subscriber');
     queryBuilder
@@ -55,12 +69,12 @@ export class SubscribersFindByNaturalPersonIdService {
       .andWhere(
         'subscribersSubscriptionDetails.subscriptionDetail = subscriptionDetail.subscriptionDetailId',
       );
-    const subscriber = await queryBuilder.getOne();
-    if (!subscriber)
-      throw new RpcException({
-        status: HttpStatus.NOT_FOUND,
-        message: 'Suscriptor no encontrado',
-      });
-    return formatFindByNaturalPersonIdResponse(subscriber);
+
+    const subscriberWithService = await queryBuilder.getOne();
+
+    return formatFindByNaturalPersonIdResponse(
+      subscriberWithService || subscriber,
+      !!subscriberWithService,
+    );
   }
 }

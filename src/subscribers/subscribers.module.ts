@@ -18,7 +18,7 @@ import { SubscribersSubscriptionDetailModule } from 'src/subscribers-subscriptio
     CommonModule,
     SubscriptionsBussinesModule,
     forwardRef(() => SubscriptionsDetailModule),
-    SubscribersSubscriptionDetailModule,
+    forwardRef(() => SubscribersSubscriptionDetailModule),
     RolesModule,
   ],
   controllers: [...SUBSCRIBERS_CONTROLLERS],

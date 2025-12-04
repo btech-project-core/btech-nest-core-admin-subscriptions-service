@@ -7,6 +7,7 @@ import { SubscriptionsServicesModule } from 'src/subscriptions-services/subscrip
 import { SUBSCRIPTIONS_DETAIL_CONTROLLERS } from './controllers';
 import { SUBSCRIPTIONS_DETAIL_CORE_SERVICES } from './services/core';
 import { SUBSCRIPTIONS_DETAIL_CUSTOM_SERVICES } from './services/custom';
+import { subscriptionDetailValidationProviders } from './services/validation';
 
 @Module({
   imports: [
@@ -18,10 +19,12 @@ import { SUBSCRIPTIONS_DETAIL_CUSTOM_SERVICES } from './services/custom';
   providers: [
     ...SUBSCRIPTIONS_DETAIL_CORE_SERVICES,
     ...SUBSCRIPTIONS_DETAIL_CUSTOM_SERVICES,
+    ...subscriptionDetailValidationProviders,
   ],
   exports: [
     ...SUBSCRIPTIONS_DETAIL_CORE_SERVICES,
     ...SUBSCRIPTIONS_DETAIL_CUSTOM_SERVICES,
+    ...subscriptionDetailValidationProviders,
   ],
 })
 export class SubscriptionsDetailModule {}

@@ -20,6 +20,7 @@ export class FindByNaturalPersonIdResponseDto {
   subscriberId: string;
   username: string;
   isTwoFactorEnabled: boolean;
-  roles: string[];
+  roles: string[] | null;
   hasPassword: boolean;
+  isAssignedToService: boolean;
 }
