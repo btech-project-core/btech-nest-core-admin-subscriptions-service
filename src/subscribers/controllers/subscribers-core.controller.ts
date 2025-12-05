@@ -6,7 +6,7 @@ import {
   UserProfileResponseDto,
   DeleteSubscriberRequest,
 } from 'src/common/dto';
-import { CreateSubscriberResponseDto } from '../dto';
+import { CreateSubscriberDto, CreateSubscriberResponseDto } from '../dto';
 import { SubscribersCoreService } from '../services/core';
 
 @Controller()
@@ -14,6 +14,13 @@ export class SubscribersCoreController {
   constructor(
     private readonly subscribersCoreService: SubscribersCoreService,
   ) {}
+
+  @MessagePattern('subscribers.create')
+  async create(
+    @Payload() createSubscriberDto: CreateSubscriberDto,
+  ): Promise<CreateSubscriberResponseDto> {
+    return await this.subscribersCoreService.create(createSubscriberDto);
+  }
 
   @MessagePattern('subscribers.remove')
   async delete(
