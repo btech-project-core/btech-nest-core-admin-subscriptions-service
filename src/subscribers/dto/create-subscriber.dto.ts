@@ -24,10 +24,13 @@ export class CreateSubscriberDto {
   @IsString({ message: 'El ID de la persona natural debe ser un texto válido' })
   naturalPersonId: string;
 
-  @IsNotEmpty({ message: 'El dominio y/ tenantId es requerido' })
-  @IsString({ message: 'El dominio y/o tenantId debe ser un texto válido' })
-  @Length(1, 35, {
-    message: 'El dominio debe tener entre 1 y 15 caracteres',
+  @IsNotEmpty({ message: 'El dominio 0 subscriptionDetailId es requerido' })
+  @IsString({
+    message: 'El dominio o subscriptionDetailId debe ser un texto válido',
+  })
+  @Length(1, 50, {
+    message:
+      'El dominio o subscriptionDetailId debe tener entre 1 y 50 caracteres',
   })
   domain: string;
 
