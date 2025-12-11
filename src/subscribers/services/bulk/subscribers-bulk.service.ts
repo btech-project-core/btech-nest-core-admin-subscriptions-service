@@ -11,6 +11,11 @@ import { SubscribersFindWithNaturalPersonsService } from './subscribers-find-wit
 import { SubscribersGetCountByDetailService } from './subscribers-get-count-by-detail.service';
 import { SubscribersCreateForNaturalPersonsService } from './subscribers-create-for-natural-persons.service';
 import { SubscriptionDetail } from 'src/subscriptions-detail/entities/subscription-detail.entity';
+import { SubscribersFindByIdsService } from './subscribers-find-by-ids.service';
+import {
+  FindSubscribersByIdsDto,
+  FindSubscribersByIdsResponseDto,
+} from '../../dto/find-subscribers-by-ids.dto';
 
 @Injectable()
 export class SubscribersBulkService {
@@ -18,6 +23,7 @@ export class SubscribersBulkService {
     private readonly subscribersFindWithNaturalPersonsService: SubscribersFindWithNaturalPersonsService,
     private readonly subscribersGetCountByDetailService: SubscribersGetCountByDetailService,
     private readonly subscribersCreateForNaturalPersonsService: SubscribersCreateForNaturalPersonsService,
+    private readonly subscribersFindByIdsService: SubscribersFindByIdsService,
   ) {}
 
   async findSubscribersWithNaturalPersons(
@@ -52,5 +58,11 @@ export class SubscribersBulkService {
       subscriptionDetails,
       queryRunner,
     );
+  }
+
+  async findSubscribersByIds(
+    findSubscribersByIdsDto: FindSubscribersByIdsDto,
+  ): Promise<FindSubscribersByIdsResponseDto[]> {
+    return this.subscribersFindByIdsService.execute(findSubscribersByIdsDto);
   }
 }

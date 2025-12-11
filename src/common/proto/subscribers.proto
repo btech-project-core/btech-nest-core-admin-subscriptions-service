@@ -10,6 +10,7 @@ service SubscribersService {
   rpc FindByDomainOrSubscriptionDetailId(FindByDomainOrSubscriptionDetailIdRequest) returns (FindByDomainOrSubscriptionDetailIdResponse);
   rpc GetSubscriberInfo(GetSubscriberInfoRequest) returns (SubscriberInfoResponse);
   rpc FindSubscribersWithNaturalPersons(FindSubscribersWithNaturalPersonsRequest) returns (FindSubscribersWithNaturalPersonsResponse);
+  rpc FindSubscribersByIds(FindSubscribersByIdsRequest) returns (FindSubscribersByIdsResponse);
   rpc RegisterSubscriber(RegisterSubscriberRequest) returns (RegisterSubscriberResponse);
   rpc SetPassword(SetPasswordRequest) returns (SetPasswordResponse);
   rpc ValidateSubscriberAlertLevel(ValidateSubscriberAlertLevelRequest) returns (ValidateSubscriberAlertLevelResponse);
@@ -62,6 +63,10 @@ message FindSubscribersWithNaturalPersonsRequest {
   optional int32 limit = 3;
   optional string term = 4;
   repeated string subscriberIds = 5;
+}
+
+message FindSubscribersByIdsRequest {
+  repeated string subscriberIds = 1;
 }
 
 // ===== RESPONSE PARA LOGIN =====
@@ -192,6 +197,20 @@ message FindSubscribersWithNaturalPersonsResponse {
   int32 page = 3;
   int32 limit = 4;
   int32 totalPages = 5;
+}
+
+message SubscriberByIdData {
+  string subscriberId = 1;
+  string username = 2;
+  string naturalPersonId = 3;
+  string fullName = 4;
+  string paternalSurname = 5;
+  string maternalSurname = 6;
+  string documentNumber = 7;
+}
+
+message FindSubscribersByIdsResponse {
+  repeated SubscriberByIdData subscribers = 1;
 }
 
 message SetPasswordRequest {

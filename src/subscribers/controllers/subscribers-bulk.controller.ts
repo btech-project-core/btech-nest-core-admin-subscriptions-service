@@ -5,6 +5,10 @@ import {
   FindSubscribersWithNaturalPersonsResponseDto,
 } from 'src/common/dto';
 import { SubscribersBulkService } from '../services/bulk';
+import {
+  FindSubscribersByIdsDto,
+  FindSubscribersByIdsResponseDto,
+} from '../dto/find-subscribers-by-ids.dto';
 
 @Controller()
 export class SubscribersBulkController {
@@ -33,5 +37,14 @@ export class SubscribersBulkController {
     return this.subscribersBulkService.getNaturalPersonIdsBySubscriptionDetail(
       subscriptionDetailId,
     );
+  }
+
+  @GrpcMethod('SubscribersService', 'FindSubscribersByIds')
+  async findSubscribersByIds(
+    data: FindSubscribersByIdsDto,
+  ): Promise<{ subscribers: FindSubscribersByIdsResponseDto[] }> {
+    const subscribers =
+      await this.subscribersBulkService.findSubscribersByIds(data);
+    return { subscribers };
   }
 }

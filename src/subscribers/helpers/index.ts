@@ -3,3 +3,4 @@ export * from './format-find-one-username-response.helper';
 export * from './format-get-subscriber-info-response.helper';
 export * from './format-subscriber-with-login-response.helper';
 export * from './format-find-by-natural-person-id-response.helper';
+export * from './format-find-subscribers-by-ids-response.helper';
