@@ -1,6 +1,14 @@
-import { IsArray, IsNotEmpty, IsString, ArrayMinSize } from 'class-validator';
+import {
+  IsArray,
+  IsNotEmpty,
+  IsString,
+  ArrayMinSize,
+  IsOptional,
+  IsBoolean,
+} from 'class-validator';
+import { PaginationDto } from 'src/common/dto';
 
-export class FindSubscribersByIdsDto {
+export class FindSubscribersByIdsDto extends PaginationDto {
   @IsNotEmpty({ message: 'Los IDs de subscribers son requeridos' })
   @IsArray({ message: 'Los IDs de subscribers deben ser un arreglo' })
   @ArrayMinSize(1, {
@@ -11,6 +19,14 @@ export class FindSubscribersByIdsDto {
     message: 'Cada ID de subscriber debe ser un texto válido',
   })
   subscriberIds: string[];
+
+  @IsOptional()
+  @IsString({ message: 'El término de búsqueda debe ser un texto válido' })
+  term?: string;
+
+  @IsOptional()
+  @IsBoolean({ message: 'hasPagination debe ser un booleano' })
+  hasPagination?: boolean;
 }
 
 export class FindSubscribersByIdsResponseDto {

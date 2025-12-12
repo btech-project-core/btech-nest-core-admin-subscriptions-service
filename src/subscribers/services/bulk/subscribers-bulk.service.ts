@@ -62,7 +62,10 @@ export class SubscribersBulkService {
 
   async findSubscribersByIds(
     findSubscribersByIdsDto: FindSubscribersByIdsDto,
-  ): Promise<FindSubscribersByIdsResponseDto[]> {
+  ): Promise<
+    | PaginationResponseDto<FindSubscribersByIdsResponseDto>
+    | FindSubscribersByIdsResponseDto[]
+  > {
     return this.subscribersFindByIdsService.execute(findSubscribersByIdsDto);
   }
 }

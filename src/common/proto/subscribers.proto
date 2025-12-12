@@ -67,6 +67,10 @@ message FindSubscribersWithNaturalPersonsRequest {
 
 message FindSubscribersByIdsRequest {
   repeated string subscriberIds = 1;
+  optional string term = 2;
+  optional bool hasPagination = 3;
+  optional int32 page = 4;
+  optional int32 limit = 5;
 }
 
 // ===== RESPONSE PARA LOGIN =====
@@ -209,8 +213,23 @@ message SubscriberByIdData {
   string documentNumber = 7;
 }
 
-message FindSubscribersByIdsResponse {
+message SubscriberList {
   repeated SubscriberByIdData subscribers = 1;
+}
+
+message PaginatedSubscribers {
+  repeated SubscriberByIdData data = 1;
+  int32 total = 2;
+  int32 page = 3;
+  int32 limit = 4;
+  int32 totalPages = 5;
+}
+
+message FindSubscribersByIdsResponse {
+  oneof result {
+    SubscriberList simple = 1;
+    PaginatedSubscribers paginated = 2;
+  }
 }
 
 message SetPasswordRequest {

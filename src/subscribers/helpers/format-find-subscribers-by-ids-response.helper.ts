@@ -1,10 +1,10 @@
 import { Subscriber } from '../entities';
 import { FindSubscribersByIdsResponseDto } from '../dto/find-subscribers-by-ids.dto';
-import { FindMultipleNaturalPersonsResponseDto } from 'src/common/dto';
+import { FindMultipleNaturalPersonsWithFiltersResponseDto } from 'src/common/dto/find-multiple-natural-persons-with-filters.dto';
 
 export const formatFindSubscribersByIdsResponse = (
   subscriber: Subscriber,
-  naturalPerson: FindMultipleNaturalPersonsResponseDto | undefined,
+  naturalPerson: FindMultipleNaturalPersonsWithFiltersResponseDto | undefined,
 ): FindSubscribersByIdsResponseDto => {
   return {
     subscriberId: subscriber.subscriberId,

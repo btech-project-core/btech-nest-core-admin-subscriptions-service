@@ -13,6 +13,10 @@ import {
   FindJuridicalPersonByPersonIdDto,
   FindJuridicalPersonByPersonIdResponseDto,
 } from '../dto';
+import {
+  FindMultipleNaturalPersonsWithFiltersDto,
+  FindMultipleNaturalPersonsWithFiltersResult,
+} from '../dto/find-multiple-natural-persons-with-filters.dto';
 import { NatsService } from 'src/communications/nats';
 
 @Injectable()
@@ -76,6 +80,15 @@ export class AdminPersonsService {
     return this.client.send(
       'juridicalPersons.findByPersonId',
       findJuridicalPersonByPersonIdDto,
+    );
+  }
+
+  async findMultipleNaturalPersonsByIdsWithFilters(
+    findMultipleDto: FindMultipleNaturalPersonsWithFiltersDto,
+  ): Promise<FindMultipleNaturalPersonsWithFiltersResult> {
+    return this.client.send(
+      'naturalPersons.findMultipleByIdsWithFilters',
+      findMultipleDto,
     );
   }
 }

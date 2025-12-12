@@ -6,6 +6,8 @@ import {
   FindSubscribersByIdsDto,
   FindSubscribersByIdsResponseDto,
 } from '../../dto/find-subscribers-by-ids.dto';
+import { PaginationResponseDto } from 'src/common/dto';
+import { FindMultipleNaturalPersonsWithFiltersResponseDto } from 'src/common/dto/find-multiple-natural-persons-with-filters.dto';
 import { AdminPersonsService } from 'src/common/services';
 import { formatFindSubscribersByIdsResponse } from 'src/subscribers/helpers/format-find-subscribers-by-ids-response.helper';
 
@@ -19,34 +21,81 @@ export class SubscribersFindByIdsService {
 
   async execute(
     findSubscribersByIdsDto: FindSubscribersByIdsDto,
-  ): Promise<FindSubscribersByIdsResponseDto[]> {
-    const { subscriberIds } = findSubscribersByIdsDto;
+  ): Promise<
+    | PaginationResponseDto<FindSubscribersByIdsResponseDto>
+    | FindSubscribersByIdsResponseDto[]
+  > {
+    const { subscriberIds, term, hasPagination, page, limit } =
+      findSubscribersByIdsDto;
     // 1. Buscar subscribers por IDs
     const subscribers = await this.subscriberRepository.find({
       where: subscriberIds.map((id) => ({ subscriberId: id })),
       select: ['subscriberId', 'username', 'naturalPersonId'],
     });
-    // Si no hay subscribers, retornar array vacío
-    if (subscribers.length === 0) return [];
+    // Si no hay subscribers, retornar según tipo de respuesta
+    if (subscribers.length === 0) {
+      if (hasPagination)
+        return {
+          data: [],
+          total: 0,
+          page: page || 1,
+          limit: limit || 10,
+          totalPages: 0,
+        };
+      return [];
+    }
     // 2. Extraer naturalPersonIds únicos
     const naturalPersonIds = [
       ...new Set(subscribers.map((sub) => sub.naturalPersonId)),
     ];
-    // 3. Llamar a admin-persons via NATS para obtener los datos de las personas naturales
-    const naturalPersonsData =
-      await this.adminPersonsService.findMultipleNaturalPersonsByIds({
-        naturalPersonIds,
-      });
-    // 4. Crear un mapa de naturalPersonId -> data para facilitar el acceso
+    // 3. Llamar a admin-persons via NATS con filtros
+    const naturalPersonsResult =
+      await this.adminPersonsService.findMultipleNaturalPersonsByIdsWithFilters(
+        {
+          naturalPersonIds,
+          term,
+          hasPagination,
+          page,
+          limit,
+        },
+      );
+    // 4. Verificar si es respuesta paginada o array simple
+    const isPaginated = hasPagination && 'data' in naturalPersonsResult;
+    if (isPaginated) {
+      // Crear mapa de naturalPersonId -> data
+      const naturalPersonsMap = new Map(
+        naturalPersonsResult.data.map((np) => [np.naturalPersonId, np]),
+      );
+      // Combinar subscribers con naturalPersons (solo los que matchean)
+      const combinedData = subscribers
+        .filter((sub) => naturalPersonsMap.has(sub.naturalPersonId))
+        .map((subscriber) =>
+          formatFindSubscribersByIdsResponse(
+            subscriber,
+            naturalPersonsMap.get(subscriber.naturalPersonId),
+          ),
+        );
+      return {
+        data: combinedData,
+        total: naturalPersonsResult.total,
+        page: naturalPersonsResult.page,
+        limit: naturalPersonsResult.limit,
+        totalPages: naturalPersonsResult.totalPages,
+      };
+    }
+    // Sin paginación - array simple
+    const naturalPersonsArray =
+      naturalPersonsResult as FindMultipleNaturalPersonsWithFiltersResponseDto[];
     const naturalPersonsMap = new Map(
-      naturalPersonsData.map((np) => [np.naturalPersonId, np]),
+      naturalPersonsArray.map((np) => [np.naturalPersonId, np]),
     );
-    // 5. Combinar la información y formatear la respuesta
-    return subscribers.map((subscriber) =>
-      formatFindSubscribersByIdsResponse(
-        subscriber,
-        naturalPersonsMap.get(subscriber.naturalPersonId),
-      ),
-    );
+    return subscribers
+      .filter((sub) => naturalPersonsMap.has(sub.naturalPersonId))
+      .map((subscriber) =>
+        formatFindSubscribersByIdsResponse(
+          subscriber,
+          naturalPersonsMap.get(subscriber.naturalPersonId),
+        ),
+      );
   }
 }

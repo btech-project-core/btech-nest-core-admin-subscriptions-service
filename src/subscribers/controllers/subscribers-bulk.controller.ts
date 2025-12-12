@@ -3,6 +3,7 @@ import { GrpcMethod, MessagePattern, Payload } from '@nestjs/microservices';
 import {
   FindSubscribersWithNaturalPersonsRequest,
   FindSubscribersWithNaturalPersonsResponseDto,
+  PaginationResponseDto,
 } from 'src/common/dto';
 import { SubscribersBulkService } from '../services/bulk';
 import {
@@ -42,9 +43,14 @@ export class SubscribersBulkController {
   @GrpcMethod('SubscribersService', 'FindSubscribersByIds')
   async findSubscribersByIds(
     data: FindSubscribersByIdsDto,
-  ): Promise<{ subscribers: FindSubscribersByIdsResponseDto[] }> {
-    const subscribers =
-      await this.subscribersBulkService.findSubscribersByIds(data);
-    return { subscribers };
+  ): Promise<
+    | { simple: { subscribers: FindSubscribersByIdsResponseDto[] } }
+    | { paginated: PaginationResponseDto<FindSubscribersByIdsResponseDto> }
+  > {
+    const result = await this.subscribersBulkService.findSubscribersByIds(data);
+    // Si es array simple (sin paginación)
+    if (Array.isArray(result)) return { simple: { subscribers: result } };
+    // Si es respuesta paginada
+    return { paginated: result };
   }
 }
