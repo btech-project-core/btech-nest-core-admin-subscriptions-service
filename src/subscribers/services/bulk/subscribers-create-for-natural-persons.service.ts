@@ -9,6 +9,7 @@ import { SubscriberRoleCoreService } from '../core/subscriber-role-core.service'
 import { RolesCustomService } from 'src/roles/services/custom';
 import * as bcryptjs from 'bcryptjs';
 import { SubscriptionDetail } from 'src/subscriptions-detail/entities/subscription-detail.entity';
+import { AdminPersonsService } from 'src/common/services/admin-persons.service';
 
 @Injectable()
 export class SubscribersCreateForNaturalPersonsService {
@@ -18,6 +19,7 @@ export class SubscribersCreateForNaturalPersonsService {
     private readonly subscribersSubscriptionDetailCoreService: SubscribersSubscriptionDetailCoreService,
     private readonly subscriberRoleCoreService: SubscriberRoleCoreService,
     private readonly rolesCustomService: RolesCustomService,
+    private readonly adminPersonsService: AdminPersonsService,
   ) {}
 
   async execute(
@@ -44,11 +46,23 @@ export class SubscribersCreateForNaturalPersonsService {
       subscriptionsBussine.subscriptionBussineId,
     );
 
+    // Obtener datos de todas las personas naturales en paralelo
+    const naturalPersonsDataPromises = naturalPersons.map((np) =>
+      this.adminPersonsService.findOneNaturalPersonById(np.naturalPersonId),
+    );
+    const naturalPersonsData = await Promise.all(naturalPersonsDataPromises);
+
+    // Crear un mapa para acceso rápido por naturalPersonId
+    const naturalPersonDataMap = new Map(
+      naturalPersonsData.map((data) => [data.naturalPersonId, data]),
+    );
+
     const subscribersToCreate = await Promise.all(
       naturalPersons.map(async (naturalPerson) => {
         const { naturalPersonId, documentNumber } = naturalPerson;
         const username = documentNumber;
         const hashedPassword = await bcryptjs.hash(username, 10);
+        const naturalPersonData = naturalPersonDataMap.get(naturalPersonId);
 
         return repository.create({
           username,
@@ -56,6 +70,9 @@ export class SubscribersCreateForNaturalPersonsService {
           naturalPersonId,
           subscriptionsBussine,
           isConfirm: true,
+          metadata: {
+            naturalPerson: naturalPersonData,
+          },
         });
       }),
     );

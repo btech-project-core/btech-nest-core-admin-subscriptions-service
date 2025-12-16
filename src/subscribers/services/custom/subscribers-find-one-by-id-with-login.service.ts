@@ -80,7 +80,7 @@ export class SubscribersFindOneByIdWithLoginService {
         message: `El usuario no se encuentra registrado`,
       });
     const subscriberNaturalPerson =
-      await this.adminPersonsService.findOneNaturalPersonBySubscriberId(
+      await this.adminPersonsService.findOneNaturalPersonById(
         subscriber.naturalPersonId,
       );
     // Verificar si es usuario global

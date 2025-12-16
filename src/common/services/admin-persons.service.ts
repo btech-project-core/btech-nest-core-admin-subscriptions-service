@@ -18,12 +18,16 @@ import {
   FindMultipleNaturalPersonsWithFiltersResult,
 } from '../dto/find-multiple-natural-persons-with-filters.dto';
 import { NatsService } from 'src/communications/nats';
+import {
+  FindOneNaturalPersonDto,
+  FindOneNaturalPersonResponseDto,
+} from '../dto/find-one-natural-person.dto';
 
 @Injectable()
 export class AdminPersonsService {
   constructor(private readonly client: NatsService) {}
 
-  async findOneNaturalPersonBySubscriberId(
+  async findOneNaturalPersonById(
     naturalPersonId: string,
   ): Promise<NaturalPersonResponseDto> {
     return this.client.send('naturalPerson.findByNaturalPersonId', {
@@ -90,5 +94,11 @@ export class AdminPersonsService {
       'naturalPersons.findMultipleByIdsWithFilters',
       findMultipleDto,
     );
+  }
+
+  async findOneNaturalPerson(
+    findOneNaturalPersonDto: FindOneNaturalPersonDto,
+  ): Promise<FindOneNaturalPersonResponseDto> {
+    return this.client.send('naturalPersons.findOne', findOneNaturalPersonDto);
   }
 }

@@ -1,5 +1,10 @@
 import { Controller } from '@nestjs/common';
-import { GrpcMethod, MessagePattern, Payload } from '@nestjs/microservices';
+import {
+  EventPattern,
+  GrpcMethod,
+  MessagePattern,
+  Payload,
+} from '@nestjs/microservices';
 import {
   FindUserByIdRequest,
   FindUserByUsernameRequest,
@@ -14,12 +19,20 @@ import {
   FindByNaturalPersonIdDto,
 } from '../dto';
 import { SubscribersCustomService } from '../services/custom';
+import { UpdateSubscriberMetadataDto } from '../dto/update-subscriber-metadata.dto';
 
 @Controller()
 export class SubscribersCustomController {
   constructor(
     private readonly subscribersCustomService: SubscribersCustomService,
   ) {}
+
+  @EventPattern('naturalPerson.updatedMetadata')
+  async handleNaturalPersonUpdated(
+    @Payload() updateDto: UpdateSubscriberMetadataDto,
+  ) {
+    return this.subscribersCustomService.updateMetadata(updateDto);
+  }
 
   @GrpcMethod('SubscribersService', 'FindUserByUsername')
   async findUserByUsername(

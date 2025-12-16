@@ -17,6 +17,8 @@ import { SubscribersQueryByUsernameService } from './subscribers-query-by-userna
 import { SubscribersQueryGlobalByUsernameService } from './subscribers-query-global-by-username.service';
 import { SubscribersSetPasswordService } from './subscribers-set-password.service';
 import { SubscribersDeleteAlternalService } from './subscribers-delete-alternal.service';
+import { SubscribersUpdateMetadataService } from './subscribers-update-metadata.service';
+import { UpdateSubscriberMetadataDto } from 'src/subscribers/dto/update-subscriber-metadata.dto';
 
 @Injectable()
 export class SubscribersCustomService {
@@ -30,6 +32,7 @@ export class SubscribersCustomService {
     private readonly subscribersQueryGlobalByUsernameService: SubscribersQueryGlobalByUsernameService,
     private readonly subscribersSetPasswordService: SubscribersSetPasswordService,
     private readonly subscribersDeleteAlternalService: SubscribersDeleteAlternalService,
+    private readonly subscribersUpdateMetadataService: SubscribersUpdateMetadataService,
   ) {}
 
   async findByNaturalPersonId(
@@ -111,5 +114,9 @@ export class SubscribersCustomService {
 
   async deleteSubscribersAlternal(): Promise<{ message: string }> {
     return this.subscribersDeleteAlternalService.execute();
+  }
+
+  async updateMetadata(dto: UpdateSubscriberMetadataDto): Promise<void> {
+    return this.subscribersUpdateMetadataService.execute(dto);
   }
 }

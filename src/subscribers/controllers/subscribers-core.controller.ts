@@ -8,6 +8,11 @@ import {
 } from 'src/common/dto';
 import { CreateSubscriberDto, CreateSubscriberResponseDto } from '../dto';
 import { SubscribersCoreService } from '../services/core';
+import { PaginationResponseDto } from 'src/common/dto/pagination.dto';
+import {
+  FindAllSubscriberDto,
+  FindAllSubscriberResponseDto,
+} from '../dto/find-all-subscriber.dto';
 
 @Controller()
 export class SubscribersCoreController {
@@ -20,6 +25,16 @@ export class SubscribersCoreController {
     @Payload() createSubscriberDto: CreateSubscriberDto,
   ): Promise<CreateSubscriberResponseDto> {
     return await this.subscribersCoreService.create(createSubscriberDto);
+  }
+
+  @MessagePattern('subscribers.findAll')
+  async findAll(
+    @Payload() findAllSubscriberDto: FindAllSubscriberDto,
+  ): Promise<
+    | FindAllSubscriberResponseDto[]
+    | PaginationResponseDto<FindAllSubscriberResponseDto>
+  > {
+    return await this.subscribersCoreService.findAll(findAllSubscriberDto);
   }
 
   @MessagePattern('subscribers.remove')

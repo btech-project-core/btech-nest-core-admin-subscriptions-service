@@ -75,7 +75,7 @@ export class SubscribersGetInfoService {
       });
 
     const subscriberNaturalPerson =
-      await this.adminPersonsService.findOneNaturalPersonBySubscriberId(
+      await this.adminPersonsService.findOneNaturalPersonById(
         subscriber.naturalPersonId,
       );
 

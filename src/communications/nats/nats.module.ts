@@ -25,6 +25,7 @@ export class NatsModule {
               maxReconnectAttempts: -1,
               reconnectTimeWait: 2000,
               waitOnFirstConnect: true,
+              maxPayload: 10 * 1024 * 1024, // 10MB (aumentado para soportar grandes arrays de IDs)
             },
           },
         ]),

@@ -11,6 +11,7 @@ import { SubscriberRoleCoreService } from './subscriber-role-core.service';
 import { SubscribersSubscriptionDetailCoreService } from 'src/subscribers-subscription-detail/services/core';
 import { SubscriptionDetailCustomService } from 'src/subscriptions-detail/services/custom';
 import { SubscriptionsBussinesCustomService } from 'src/subscriptions-bussines/services/custom';
+import { AdminPersonsService } from 'src/common/services/admin-persons.service';
 
 @Injectable()
 export class SubscribersCreateService {
@@ -22,6 +23,7 @@ export class SubscribersCreateService {
     private readonly subscriptionsDetailCustomService: SubscriptionDetailCustomService,
     private readonly subscribersSubscriptionDetailCoreService: SubscribersSubscriptionDetailCoreService,
     private readonly rolesCustomService: RolesCustomService,
+    private readonly adminPersonsService: AdminPersonsService,
   ) {}
 
   async execute(
@@ -50,13 +52,20 @@ export class SubscribersCreateService {
       roleCode ?? 'CLI',
       targetSubscriptionDetail.subscriptionDetailId,
     );
-    // Crear subscriber básico
+    // Obtener datos de la persona natural para metadata
+    const naturalPersonData =
+      await this.adminPersonsService.findOneNaturalPerson({
+        naturalPersonId,
+        subscriptionBussineId: subscriptionsBussine.subscriptionBussineId,
+      });
+    // Crear subscriber básico con metadata
     const subscriber = this.subscriberRepository.create({
       username,
       password,
       isConfirm: isConfirm ?? true,
       naturalPersonId,
       subscriptionsBussine,
+      metadata: naturalPersonData,
     });
     const subscriberSaved = await this.subscriberRepository.save(subscriber);
     // Crear la relación intermedia con el servicio específico

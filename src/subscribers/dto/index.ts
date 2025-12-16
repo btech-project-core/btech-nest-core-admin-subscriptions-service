@@ -1,3 +1,4 @@
+export * from './find-all-subscriber.dto';
 export * from './create-subscriber.dto';
 export * from './find-one-subscriber-by-id.dto';
 export * from './find-one-username.dto';
