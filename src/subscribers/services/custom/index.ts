@@ -9,6 +9,7 @@ export * from './subscribers-query-global-by-username.service';
 export * from './subscribers-set-password.service';
 export * from './subscribers-delete-alternal.service';
 export * from './subscribers-custom.service';
+export * from './subscribers-find-one-by-term.service';
 
 import { SubscribersUpdateMetadataService } from './subscribers-update-metadata.service';
 import { SubscribersFindByNaturalPersonIdService } from './subscribers-find-by-natural-person-id.service';
@@ -21,6 +22,7 @@ import { SubscribersQueryGlobalByUsernameService } from './subscribers-query-glo
 import { SubscribersSetPasswordService } from './subscribers-set-password.service';
 import { SubscribersDeleteAlternalService } from './subscribers-delete-alternal.service';
 import { SubscribersCustomService } from './subscribers-custom.service';
+import { SubscribersFindOneByTermService } from './subscribers-find-one-by-term.service';
 
 export const subscribersCustomProviders = [
   SubscribersUpdateMetadataService,
@@ -34,4 +36,5 @@ export const subscribersCustomProviders = [
   SubscribersSetPasswordService,
   SubscribersDeleteAlternalService,
   SubscribersCustomService,
+  SubscribersFindOneByTermService,
 ];

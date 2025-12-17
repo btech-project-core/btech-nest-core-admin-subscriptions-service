@@ -21,6 +21,7 @@ import { SubscriberDesignePreference } from 'src/subscriber-designe-preference/e
 ])
 @Unique('UQ_subscriber_username_business', ['subscriptionsBussine', 'username'])
 @Index('IDX_subscriber_created_at', ['createdAt'])
+@Index('IDX_subscriber_document', ['personDocumentNumber'])
 export class Subscriber extends Timestamped {
   @PrimaryGeneratedColumn('uuid')
   subscriberId: string;
@@ -85,6 +86,16 @@ export class Subscriber extends Timestamped {
 
   @Column({ type: 'boolean', default: true })
   isActive: boolean;
+
+  @Column({
+    type: 'varchar',
+    length: 50,
+    nullable: true,
+    generatedType: 'STORED',
+    asExpression:
+      "JSON_UNQUOTE(JSON_EXTRACT(metadata, '$.person.documentNumber'))",
+  })
+  personDocumentNumber: string;
 
   @OneToMany(
     () => SubscribersSubscriptionDetail,

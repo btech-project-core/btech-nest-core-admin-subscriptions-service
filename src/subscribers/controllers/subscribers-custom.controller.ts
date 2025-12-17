@@ -17,6 +17,8 @@ import {
   FindOneSubscriberByIdResponseDto,
   FindByNaturalPersonIdResponseDto,
   FindByNaturalPersonIdDto,
+  FindOneSubscriberByTermDto,
+  FindOneSubscriberByTermResponseDto,
 } from '../dto';
 import { SubscribersCustomService } from '../services/custom';
 import { UpdateSubscriberMetadataDto } from '../dto/update-subscriber-metadata.dto';
@@ -107,5 +109,12 @@ export class SubscribersCustomController {
   @MessagePattern('subscribers.deleteSubscribersAlternal')
   async deleteSubscribersAlternal(): Promise<{ message: string }> {
     return this.subscribersCustomService.deleteSubscribersAlternal();
+  }
+
+  @MessagePattern('subscribers.findOneByTerm')
+  async findOneByTerm(
+    @Payload() data: FindOneSubscriberByTermDto,
+  ): Promise<FindOneSubscriberByTermResponseDto> {
+    return this.subscribersCustomService.findOneByTerm(data);
   }
 }

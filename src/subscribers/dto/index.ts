@@ -6,3 +6,4 @@ export * from './find-subscribers-with-natural-persons.dto';
 export * from './update-subscriber.dto';
 export * from './find-by-natural-person-id-response.dto';
 export * from './find-subscribers-by-ids.dto';
+export * from './find-one-subscriber-by-term.dto';

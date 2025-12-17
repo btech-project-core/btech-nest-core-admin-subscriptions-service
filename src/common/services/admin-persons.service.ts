@@ -10,10 +10,6 @@ import {
   FindMultipleNaturalPersonsResponseDto,
 } from '../dto/find-multiple-natural-persons.dto';
 import {
-  FindJuridicalPersonByPersonIdDto,
-  FindJuridicalPersonByPersonIdResponseDto,
-} from '../dto';
-import {
   FindMultipleNaturalPersonsWithFiltersDto,
   FindMultipleNaturalPersonsWithFiltersResult,
 } from '../dto/find-multiple-natural-persons-with-filters.dto';
@@ -22,6 +18,10 @@ import {
   FindOneNaturalPersonDto,
   FindOneNaturalPersonResponseDto,
 } from '../dto/find-one-natural-person.dto';
+import {
+  FindByDocumentNumberNaturalPersonDto,
+  FindByDocumentNumberNaturalPersonResponseDto,
+} from '../dto/find-by-document-number-natural-person.dto';
 
 @Injectable()
 export class AdminPersonsService {
@@ -78,15 +78,6 @@ export class AdminPersonsService {
     return this.client.send('naturalPersons.findAllNaturalPersonIds', {});
   }
 
-  async findOneJuridicalPersonByPersonId(
-    findJuridicalPersonByPersonIdDto: FindJuridicalPersonByPersonIdDto,
-  ): Promise<FindJuridicalPersonByPersonIdResponseDto> {
-    return this.client.send(
-      'juridicalPersons.findByPersonId',
-      findJuridicalPersonByPersonIdDto,
-    );
-  }
-
   async findMultipleNaturalPersonsByIdsWithFilters(
     findMultipleDto: FindMultipleNaturalPersonsWithFiltersDto,
   ): Promise<FindMultipleNaturalPersonsWithFiltersResult> {
@@ -100,5 +91,21 @@ export class AdminPersonsService {
     findOneNaturalPersonDto: FindOneNaturalPersonDto,
   ): Promise<FindOneNaturalPersonResponseDto> {
     return this.client.send('naturalPersons.findOne', findOneNaturalPersonDto);
+  }
+
+  async findByDocumentNumber(
+    findByDocumentNumberDto: FindByDocumentNumberNaturalPersonDto,
+  ): Promise<FindByDocumentNumberNaturalPersonResponseDto | null> {
+    let naturalPerson: FindByDocumentNumberNaturalPersonResponseDto | null;
+    try {
+      naturalPerson = await this.client.send(
+        'naturalPersons.findByDocumentNumber',
+        findByDocumentNumberDto,
+      );
+      return naturalPerson;
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
   }
 }

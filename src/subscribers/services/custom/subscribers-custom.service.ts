@@ -19,6 +19,11 @@ import { SubscribersSetPasswordService } from './subscribers-set-password.servic
 import { SubscribersDeleteAlternalService } from './subscribers-delete-alternal.service';
 import { SubscribersUpdateMetadataService } from './subscribers-update-metadata.service';
 import { UpdateSubscriberMetadataDto } from 'src/subscribers/dto/update-subscriber-metadata.dto';
+import { SubscribersFindOneByTermService } from './subscribers-find-one-by-term.service';
+import {
+  FindOneSubscriberByTermDto,
+  FindOneSubscriberByTermResponseDto,
+} from '../../dto/find-one-subscriber-by-term.dto';
 
 @Injectable()
 export class SubscribersCustomService {
@@ -33,6 +38,7 @@ export class SubscribersCustomService {
     private readonly subscribersSetPasswordService: SubscribersSetPasswordService,
     private readonly subscribersDeleteAlternalService: SubscribersDeleteAlternalService,
     private readonly subscribersUpdateMetadataService: SubscribersUpdateMetadataService,
+    private readonly subscribersFindOneByTermService: SubscribersFindOneByTermService,
   ) {}
 
   async findByNaturalPersonId(
@@ -118,5 +124,11 @@ export class SubscribersCustomService {
 
   async updateMetadata(dto: UpdateSubscriberMetadataDto): Promise<void> {
     return this.subscribersUpdateMetadataService.execute(dto);
+  }
+
+  async findOneByTerm(
+    dto: FindOneSubscriberByTermDto,
+  ): Promise<FindOneSubscriberByTermResponseDto> {
+    return this.subscribersFindOneByTermService.execute(dto);
   }
 }

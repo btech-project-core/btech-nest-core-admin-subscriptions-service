@@ -1,4 +1,10 @@
-import { IsOptional, IsString, IsBoolean, IsNotEmpty } from 'class-validator';
+import {
+  IsOptional,
+  IsString,
+  IsBoolean,
+  IsNotEmpty,
+  MinLength,
+} from 'class-validator';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { FindOneNaturalPersonResponseDto } from 'src/common/dto/find-one-natural-person.dto';
 
@@ -9,9 +15,12 @@ export class FindAllSubscriberDto extends PaginationDto {
   })
   subscriptionDetailId: string;
 
-  @IsOptional()
+  @IsNotEmpty({ message: 'El término de búsqueda es requerido' })
   @IsString({ message: 'El término de búsqueda debe ser un texto válido' })
-  term?: string;
+  @MinLength(4, {
+    message: 'El término de búsqueda debe tener al menos 4 caracteres',
+  })
+  term: string;
 
   @IsOptional()
   @IsBoolean({
