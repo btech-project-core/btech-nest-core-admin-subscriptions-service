@@ -1,5 +1,5 @@
 import { IsNotEmpty, IsString, IsUUID } from 'class-validator';
-import { FindOnePersonResponseDto } from './find-juridical-person-by-person-id.dto';
+import { FindOnePersonResponseDto } from './find-one-person.dto';
 
 export class FindOneNaturalPersonDto {
   @IsUUID('all', { message: 'El id de la persona natural no es válido' })

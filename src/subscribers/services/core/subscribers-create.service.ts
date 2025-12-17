@@ -13,6 +13,7 @@ import { SubscriptionDetailCustomService } from 'src/subscriptions-detail/servic
 import { SubscriptionsBussinesCustomService } from 'src/subscriptions-bussines/services/custom';
 import { AdminPersonsService } from 'src/common/services/admin-persons.service';
 import { SubscribersSendRegistrationEmailService } from '../notification/subscribers-send-registration-email.service';
+import * as bcrypt from 'bcryptjs';
 
 @Injectable()
 export class SubscribersCreateService {
@@ -62,10 +63,14 @@ export class SubscribersCreateService {
         naturalPersonId,
         subscriptionBussineId: subscriptionsBussine.subscriptionBussineId,
       });
+
+    // Hashear el password antes de guardarlo
+    const hashedPassword = await bcrypt.hash(password, 10);
+
     // Crear subscriber básico con metadata
     const subscriber = this.subscriberRepository.create({
       username,
-      password,
+      password: hashedPassword,
       isConfirm: isConfirm ?? true,
       naturalPersonId,
       subscriptionsBussine,

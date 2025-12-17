@@ -10,4 +10,3 @@ export * from './person-information.dto';
 export * from './person.dto';
 export * from './subscriber-info-response.dto';
 export * from './user-profile.dto';
-export * from './find-juridical-person-by-person-id.dto';

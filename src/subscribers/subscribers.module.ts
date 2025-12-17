@@ -13,7 +13,7 @@ import { RolesModule } from 'src/roles/roles.module';
 import { SubscriptionsDetailModule } from 'src/subscriptions-detail/subscriptions-detail.module';
 import { SubscribersSubscriptionDetailModule } from 'src/subscribers-subscription-detail/subscribers-subscription-detail.module';
 import { CommunicationsModule } from 'src/communications/communications.module';
-import { SubscriptionsDesigneSettingsModule } from 'src/subscriptions-designe-settings/subscriptions-designe-settings.module';
+import { SubscriptionDetailDesigneModeModule } from 'src/subscription-detail-designe-mode/subscription-detail-designe-mode.module';
 
 @Module({
   imports: [
@@ -24,7 +24,7 @@ import { SubscriptionsDesigneSettingsModule } from 'src/subscriptions-designe-se
     forwardRef(() => SubscribersSubscriptionDetailModule),
     RolesModule,
     CommunicationsModule,
-    SubscriptionsDesigneSettingsModule,
+    SubscriptionDetailDesigneModeModule,
   ],
   controllers: [...SUBSCRIBERS_CONTROLLERS],
   providers: [

@@ -20,11 +20,11 @@ export class SubscriptionsDesigneSettingsFindByDomainService {
     const queryBuilder = this.subscriptionsDesigneSettingRepository
       .createQueryBuilder('subscriptionsDesigneSetting')
       .leftJoinAndSelect(
-        'subscriptionsDesigneSetting.designerMode',
-        'designerMode',
+        'subscriptionsDesigneSetting.subscriptionDetailDesigneMode',
+        'subscriptionDetailDesigneMode',
       )
       .leftJoinAndSelect(
-        'subscriptionsDesigneSetting.subscriptionDetail',
+        'subscriptionDetailDesigneMode.subscriptionDetail',
         'subscriptionDetail',
       )
       .leftJoinAndSelect(

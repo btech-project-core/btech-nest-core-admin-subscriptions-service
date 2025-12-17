@@ -4,11 +4,11 @@ import {
   GrpcMetadataDto,
   SendUserRegistrationEmailDto,
 } from 'src/communications/grpc/dto/send-user-registration-email.dto';
-import { SubscriptionsDesigneSettingsFindByDomainService } from 'src/subscriptions-designe-settings/services/custom/subscriptions-designe-settings-find-by-domain.service';
 import { Subscriber } from 'src/subscribers/entities/subscriber.entity';
 import { FindOneNaturalPersonResponseDto } from 'src/common/dto/find-one-natural-person.dto';
 import { SubscribersFindOneByIdWithLoginService } from '../custom/subscribers-find-one-by-id-with-login.service';
 import { CodeService } from 'src/common/enums';
+import { SubscriptionDetailDesigneModeCustomService } from 'src/subscription-detail-designe-mode/services/custom';
 
 @Injectable()
 export class SubscribersSendRegistrationEmailService {
@@ -18,7 +18,7 @@ export class SubscribersSendRegistrationEmailService {
 
   constructor(
     private readonly emailsClient: EmailsClient,
-    private readonly subscriptionsDesigneSettingsFindByDomainService: SubscriptionsDesigneSettingsFindByDomainService,
+    private readonly subscriptionDetailDesigneModeCustomService: SubscriptionDetailDesigneModeCustomService,
     private readonly subscribersFindOneByIdWithLoginService: SubscribersFindOneByIdWithLoginService,
   ) {}
 
@@ -35,7 +35,7 @@ export class SubscribersSendRegistrationEmailService {
     try {
       // Obtener el primer email disponible de la persona natural
       const email = naturalPersonData.person?.personInformation?.find(
-        (info) => info.informationType === 'Correo',
+        (info) => info.informationType.description === 'Correo',
       )?.description;
       if (!email) {
         this.logger.warn(
@@ -45,7 +45,10 @@ export class SubscribersSendRegistrationEmailService {
       }
       // Ejecutar llamadas en paralelo
       const [designeSettings, userProfile] = await Promise.all([
-        this.subscriptionsDesigneSettingsFindByDomainService.execute(domain),
+        this.subscriptionDetailDesigneModeCustomService.findByDomain(
+          domain,
+          'CLA',
+        ),
         this.subscribersFindOneByIdWithLoginService.execute(
           subscriber.subscriberId,
           codeService as CodeService,
