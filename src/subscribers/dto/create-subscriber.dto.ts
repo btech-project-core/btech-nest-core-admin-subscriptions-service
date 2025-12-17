@@ -48,6 +48,14 @@ export class CreateSubscriberDto {
   @IsOptional()
   @IsBoolean({ message: 'El campo isConfirm debe ser un booleano.' })
   isConfirm?: boolean;
+
+  @IsOptional()
+  @IsString({ message: 'La dirección IP debe ser una cadena de texto' })
+  ipAddress?: string;
+
+  @IsOptional()
+  @IsString({ message: 'El user agent debe ser una cadena de texto' })
+  userAgent?: string;
 }
 
 export class CreateSubscriberResponseDto {

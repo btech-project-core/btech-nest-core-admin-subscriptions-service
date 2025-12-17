@@ -6,11 +6,14 @@ import { SUBSCRIBERS_CORE_SERVICES } from './services/core';
 import { subscribersCustomProviders } from './services/custom';
 import { subscribersValidationProviders } from './services/validation';
 import { subscribersBulkProviders } from './services/bulk';
+import { subscribersNotificationProviders } from './services/notification';
 import { CommonModule } from 'src/common/common.module';
 import { SubscriptionsBussinesModule } from 'src/subscriptions-bussines/subscriptions-bussines.module';
 import { RolesModule } from 'src/roles/roles.module';
 import { SubscriptionsDetailModule } from 'src/subscriptions-detail/subscriptions-detail.module';
 import { SubscribersSubscriptionDetailModule } from 'src/subscribers-subscription-detail/subscribers-subscription-detail.module';
+import { CommunicationsModule } from 'src/communications/communications.module';
+import { SubscriptionsDesigneSettingsModule } from 'src/subscriptions-designe-settings/subscriptions-designe-settings.module';
 
 @Module({
   imports: [
@@ -20,6 +23,8 @@ import { SubscribersSubscriptionDetailModule } from 'src/subscribers-subscriptio
     forwardRef(() => SubscriptionsDetailModule),
     forwardRef(() => SubscribersSubscriptionDetailModule),
     RolesModule,
+    CommunicationsModule,
+    SubscriptionsDesigneSettingsModule,
   ],
   controllers: [...SUBSCRIBERS_CONTROLLERS],
   providers: [
@@ -27,12 +32,14 @@ import { SubscribersSubscriptionDetailModule } from 'src/subscribers-subscriptio
     ...subscribersCustomProviders,
     ...subscribersValidationProviders,
     ...subscribersBulkProviders,
+    ...subscribersNotificationProviders,
   ],
   exports: [
     ...SUBSCRIBERS_CORE_SERVICES,
     ...subscribersCustomProviders,
     ...subscribersValidationProviders,
     ...subscribersBulkProviders,
+    ...subscribersNotificationProviders,
   ],
 })
 export class SubscribersModule {}

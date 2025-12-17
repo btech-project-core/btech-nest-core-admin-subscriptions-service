@@ -12,6 +12,7 @@ import { SubscribersSubscriptionDetailCoreService } from 'src/subscribers-subscr
 import { SubscriptionDetailCustomService } from 'src/subscriptions-detail/services/custom';
 import { SubscriptionsBussinesCustomService } from 'src/subscriptions-bussines/services/custom';
 import { AdminPersonsService } from 'src/common/services/admin-persons.service';
+import { SubscribersSendRegistrationEmailService } from '../notification/subscribers-send-registration-email.service';
 
 @Injectable()
 export class SubscribersCreateService {
@@ -24,6 +25,7 @@ export class SubscribersCreateService {
     private readonly subscribersSubscriptionDetailCoreService: SubscribersSubscriptionDetailCoreService,
     private readonly rolesCustomService: RolesCustomService,
     private readonly adminPersonsService: AdminPersonsService,
+    private readonly subscribersSendRegistrationEmailService: SubscribersSendRegistrationEmailService,
   ) {}
 
   async execute(
@@ -37,6 +39,8 @@ export class SubscribersCreateService {
       service,
       role: roleCode,
       isConfirm,
+      ipAddress,
+      userAgent,
     } = createSubscriberDto;
     const subscriptionsBussine =
       await this.subscriptionsBussinesCustomService.findOneByDomainOrTenantId(
@@ -80,6 +84,17 @@ export class SubscribersCreateService {
       subscribersSubscriptionDetail,
       role,
       true,
+    );
+    // Enviar correo de registro de usuario (sin await para no bloquear la respuesta)
+    this.subscribersSendRegistrationEmailService.execute(
+      subscriberSaved,
+      naturalPersonData,
+      password,
+      role.code,
+      service,
+      domain,
+      targetSubscriptionDetail.subscriptionDetailId,
+      { ipAddress, userAgent },
     );
     return {
       subscriberId: subscriberSaved.subscriberId,

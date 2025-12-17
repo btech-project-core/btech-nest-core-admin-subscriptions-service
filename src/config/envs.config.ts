@@ -22,6 +22,7 @@ interface EnvsVars {
   DB_NAME: string;
   DB_SYNCHRONIZE: boolean;
   DOMAIN_PRINCIPAL: string;
+  EMAILS_GRPC_URL: string;
 }
 
 const envsSchema = joi
@@ -35,6 +36,7 @@ const envsSchema = joi
     DB_SYNCHRONIZE: joi.boolean().default(true),
     NATS_SERVERS: joi.array().items(joi.string()).required(),
     DOMAIN_PRINCIPAL: joi.string().required(),
+    EMAILS_GRPC_URL: joi.string().required(),
   })
   .unknown(true);
 
@@ -51,6 +53,7 @@ const envVars: EnvsVars = validationResult.value as EnvsVars;
 export const envs = {
   grpc: {
     port: envVars.GRPC_PORT,
+    emailsUrl: envVars.EMAILS_GRPC_URL,
   },
   db: {
     host: envVars.DB_HOST,
