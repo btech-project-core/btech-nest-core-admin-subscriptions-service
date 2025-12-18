@@ -3,8 +3,6 @@ import {
   CreateSubscriberDto,
   CreateSubscriberResponseDto,
 } from '../../dto/create-subscriber.dto';
-import { UserProfileResponseDto } from 'src/common/dto/user-profile.dto';
-import { Subscriber } from '../../entities/subscriber.entity';
 import { SubscribersCreateService } from './subscribers-create.service';
 import { SubscribersUpdateService } from './subscribers-update.service';
 import { SubscribersDeleteService } from './subscribers-delete.service';
@@ -14,6 +12,12 @@ import {
   FindAllSubscriberResponseDto,
 } from '../../dto/find-all-subscriber.dto';
 import { PaginationResponseDto } from 'src/common/dto/pagination.dto';
+import {
+  UpdateSubscriberDto,
+  UpdateSubscriberResponseDto,
+} from '../../dto/update-subscriber.dto';
+import { SubscribersFindOneService } from './subscribers-find-one.service';
+import { Subscriber } from 'src/subscribers/entities';
 
 @Injectable()
 export class SubscribersCoreService {
@@ -22,6 +26,7 @@ export class SubscribersCoreService {
     private readonly subscribersUpdateService: SubscribersUpdateService,
     private readonly subscribersDeleteService: SubscribersDeleteService,
     private readonly subscribersFindAllService: SubscribersFindAllService,
+    private readonly subscribersFindOneService: SubscribersFindOneService,
   ) {}
 
   async create(
@@ -39,14 +44,14 @@ export class SubscribersCoreService {
     return await this.subscribersFindAllService.execute(findAllSubscriberDto);
   }
 
+  async findOne(subscriberId: string): Promise<Subscriber> {
+    return await this.subscribersFindOneService.execute(subscriberId);
+  }
+
   async update(
-    subscriberId: string,
-    updateData: Partial<Subscriber>,
-  ): Promise<UserProfileResponseDto> {
-    return await this.subscribersUpdateService.execute(
-      subscriberId,
-      updateData,
-    );
+    updateData: UpdateSubscriberDto,
+  ): Promise<UpdateSubscriberResponseDto> {
+    return await this.subscribersUpdateService.execute(updateData);
   }
 
   async delete(subscriberId: string): Promise<{ message: string }> {

@@ -4,6 +4,7 @@ import { EMAIL_SERVICE } from 'src/config';
 import { firstValueFrom } from 'rxjs';
 import { EmailsService } from '../interfaces/email.interface';
 import { SendUserRegistrationEmailDto } from '../dto/send-user-registration-email.dto';
+import { SendUserUpdateEmailDto } from '../dto/send-user-update-email.dto';
 import { SendEmailResponseDto } from '../dto/send-email-response.dto';
 
 @Injectable()
@@ -25,5 +26,11 @@ export class EmailsClient implements OnModuleInit {
     return firstValueFrom(
       this.emailsService.sendUserRegistrationEmail(request),
     );
+  }
+
+  async sendUserUpdateEmail(
+    request: SendUserUpdateEmailDto,
+  ): Promise<SendEmailResponseDto> {
+    return firstValueFrom(this.emailsService.sendUserUpdateEmail(request));
   }
 }

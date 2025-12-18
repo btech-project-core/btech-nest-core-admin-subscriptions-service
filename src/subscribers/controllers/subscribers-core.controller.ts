@@ -2,11 +2,14 @@ import { Controller } from '@nestjs/common';
 import { GrpcMethod, MessagePattern, Payload } from '@nestjs/microservices';
 import {
   CreateSubscriberRequest,
-  UpdateUserRequest,
-  UserProfileResponseDto,
   DeleteSubscriberRequest,
 } from 'src/common/dto';
-import { CreateSubscriberDto, CreateSubscriberResponseDto } from '../dto';
+import {
+  CreateSubscriberDto,
+  CreateSubscriberResponseDto,
+  UpdateSubscriberDto,
+  UpdateSubscriberResponseDto,
+} from '../dto';
 import { SubscribersCoreService } from '../services/core';
 import { PaginationResponseDto } from 'src/common/dto/pagination.dto';
 import {
@@ -37,6 +40,13 @@ export class SubscribersCoreController {
     return await this.subscribersCoreService.findAll(findAllSubscriberDto);
   }
 
+  @MessagePattern('subscribers.update')
+  async update(
+    @Payload() updateSubscriberDto: UpdateSubscriberDto,
+  ): Promise<UpdateSubscriberResponseDto> {
+    return await this.subscribersCoreService.update(updateSubscriberDto);
+  }
+
   @MessagePattern('subscribers.remove')
   async delete(
     @Payload('subscriberId') subscriberId: string,
@@ -51,10 +61,10 @@ export class SubscribersCoreController {
     return this.subscribersCoreService.create(data);
   }
 
-  @GrpcMethod('SubscribersService', 'UpdateUser')
-  async updateUser(data: UpdateUserRequest): Promise<UserProfileResponseDto> {
-    return this.subscribersCoreService.update(data.subscriberId, data);
-  }
+  // @GrpcMethod('SubscribersService', 'UpdateUser')
+  // async updateUser(data: UpdateUserRequest): Promise<UserProfileResponseDto> {
+  //   return this.subscribersCoreService.update(data.subscriberId, data);
+  // }
 
   @GrpcMethod('SubscribersService', 'DeleteSubscriber')
   async deleteSubscriber(
