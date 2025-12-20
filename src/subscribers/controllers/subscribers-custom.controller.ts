@@ -22,6 +22,10 @@ import {
 } from '../dto';
 import { SubscribersCustomService } from '../services/custom';
 import { UpdateSubscriberMetadataDto } from '../dto/update-subscriber-metadata.dto';
+import {
+  UpdateSubscriberTwoFactorCodeDto,
+  UpdateSubscriberTwoFactorCodeResponseDto,
+} from '../dto/update-subscriber-two-factor-code.dto';
 
 @Controller()
 export class SubscribersCustomController {
@@ -34,6 +38,38 @@ export class SubscribersCustomController {
     @Payload() updateDto: UpdateSubscriberMetadataDto,
   ) {
     return this.subscribersCustomService.updateMetadata(updateDto);
+  }
+
+  @MessagePattern('subscribers.findUserProfile')
+  async findUserProfileNats(
+    @Payload() data: FindUserByIdRequest,
+  ): Promise<UserProfileResponseDto | null> {
+    return this.subscribersCustomService.findOneBySubscriberIdWithLogin(
+      data.subscriberId,
+      data.service,
+    );
+  }
+
+  @MessagePattern('subscribers.findByNaturalPersonId')
+  async findByNaturalPersonId(
+    @Payload() data: FindByNaturalPersonIdDto,
+  ): Promise<FindByNaturalPersonIdResponseDto> {
+    return this.subscribersCustomService.findByNaturalPersonId(
+      data.naturalPersonId,
+      data.service,
+    );
+  }
+
+  @MessagePattern('subscribers.deleteSubscribersAlternal')
+  async deleteSubscribersAlternal(): Promise<{ message: string }> {
+    return this.subscribersCustomService.deleteSubscribersAlternal();
+  }
+
+  @MessagePattern('subscribers.findOneByTerm')
+  async findOneByTerm(
+    @Payload() data: FindOneSubscriberByTermDto,
+  ): Promise<FindOneSubscriberByTermResponseDto> {
+    return this.subscribersCustomService.findOneByTerm(data);
   }
 
   @GrpcMethod('SubscribersService', 'FindUserByUsername')
@@ -54,16 +90,6 @@ export class SubscribersCustomController {
     data: FindUserByIdRequest,
   ): Promise<FindOneSubscriberByIdResponseDto> {
     return this.subscribersCustomService.findOneById(data.subscriberId);
-  }
-
-  @MessagePattern('subscribers.findUserProfile')
-  async findUserProfileNats(
-    @Payload() data: FindUserByIdRequest,
-  ): Promise<UserProfileResponseDto | null> {
-    return this.subscribersCustomService.findOneBySubscriberIdWithLogin(
-      data.subscriberId,
-      data.service,
-    );
   }
 
   @GrpcMethod('SubscribersService', 'FindUserProfile')
@@ -96,25 +122,10 @@ export class SubscribersCustomController {
     );
   }
 
-  @MessagePattern('subscribers.findByNaturalPersonId')
-  async findByNaturalPersonId(
-    @Payload() data: FindByNaturalPersonIdDto,
-  ): Promise<FindByNaturalPersonIdResponseDto> {
-    return this.subscribersCustomService.findByNaturalPersonId(
-      data.naturalPersonId,
-      data.service,
-    );
-  }
-
-  @MessagePattern('subscribers.deleteSubscribersAlternal')
-  async deleteSubscribersAlternal(): Promise<{ message: string }> {
-    return this.subscribersCustomService.deleteSubscribersAlternal();
-  }
-
-  @MessagePattern('subscribers.findOneByTerm')
-  async findOneByTerm(
-    @Payload() data: FindOneSubscriberByTermDto,
-  ): Promise<FindOneSubscriberByTermResponseDto> {
-    return this.subscribersCustomService.findOneByTerm(data);
+  @GrpcMethod('SubscribersService', 'UpdateUser')
+  async updateTwoFactorCode(
+    data: UpdateSubscriberTwoFactorCodeDto,
+  ): Promise<UpdateSubscriberTwoFactorCodeResponseDto | null> {
+    return this.subscribersCustomService.updateTwoFactorCode(data);
   }
 }

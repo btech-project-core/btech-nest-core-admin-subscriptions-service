@@ -24,6 +24,11 @@ import {
   FindOneSubscriberByTermDto,
   FindOneSubscriberByTermResponseDto,
 } from '../../dto/find-one-subscriber-by-term.dto';
+import {
+  UpdateSubscriberTwoFactorCodeDto,
+  UpdateSubscriberTwoFactorCodeResponseDto,
+} from 'src/subscribers/dto/update-subscriber-two-factor-code.dto';
+import { SubscribersUpdateTwoFactorCodeService } from './subscribers-update-two-factor-code.service';
 
 @Injectable()
 export class SubscribersCustomService {
@@ -39,6 +44,7 @@ export class SubscribersCustomService {
     private readonly subscribersDeleteAlternalService: SubscribersDeleteAlternalService,
     private readonly subscribersUpdateMetadataService: SubscribersUpdateMetadataService,
     private readonly subscribersFindOneByTermService: SubscribersFindOneByTermService,
+    private readonly subscribersUpdateTwoFactorCodeService: SubscribersUpdateTwoFactorCodeService,
   ) {}
 
   async findByNaturalPersonId(
@@ -130,5 +136,11 @@ export class SubscribersCustomService {
     dto: FindOneSubscriberByTermDto,
   ): Promise<FindOneSubscriberByTermResponseDto> {
     return this.subscribersFindOneByTermService.execute(dto);
+  }
+
+  async updateTwoFactorCode(
+    dto: UpdateSubscriberTwoFactorCodeDto,
+  ): Promise<UpdateSubscriberTwoFactorCodeResponseDto | null> {
+    return this.subscribersUpdateTwoFactorCodeService.execute(dto);
   }
 }
