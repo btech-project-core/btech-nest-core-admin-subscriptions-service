@@ -39,6 +39,12 @@ export class SubscriptionsBussine extends Timestamped {
   subscriptionDetail: SubscriptionDetail[];
 
   @Column({
+    type: 'json',
+    nullable: true,
+  })
+  personData: Record<string, any>;
+
+  @Column({
     type: 'integer',
     nullable: false,
   })
