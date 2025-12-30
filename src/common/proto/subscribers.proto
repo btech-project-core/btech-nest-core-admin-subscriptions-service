@@ -12,6 +12,7 @@ service SubscribersService {
   rpc FindSubscribersWithNaturalPersons(FindSubscribersWithNaturalPersonsRequest) returns (FindSubscribersWithNaturalPersonsResponse);
   rpc FindSubscribersByIds(FindSubscribersByIdsRequest) returns (FindSubscribersByIdsResponse);
   rpc RegisterSubscriber(RegisterSubscriberRequest) returns (RegisterSubscriberResponse);
+  rpc CreateSubscribersBulkFromNaturalPersons(CreateSubscribersBulkFromNaturalPersonsRequest) returns (CreateSubscribersBulkFromNaturalPersonsResponse);
   rpc SetPassword(SetPasswordRequest) returns (SetPasswordResponse);
   rpc ValidateSubscriberAlertLevel(ValidateSubscriberAlertLevelRequest) returns (ValidateSubscriberAlertLevelResponse);
   rpc DeleteSubscriber(DeleteSubscriberRequest) returns (DeleteSubscriberResponse);
@@ -71,6 +72,18 @@ message FindSubscribersByIdsRequest {
   optional bool hasPagination = 3;
   optional int32 page = 4;
   optional int32 limit = 5;
+}
+
+message SubscriberBulkItem {
+  string naturalPersonId = 1;
+  string username = 2;
+  string metadata = 3;
+}
+
+message CreateSubscribersBulkFromNaturalPersonsRequest {
+  repeated SubscriberBulkItem subscribers = 1;
+  string subscriptionDetailId = 2;
+  string subscriptionBussineId = 3;
 }
 
 // ===== RESPONSE PARA LOGIN =====
@@ -264,5 +277,14 @@ message DeleteSubscriberRequest {
 
 message DeleteSubscriberResponse {
   string message = 1;
+}
+
+message SubscriberBulkResult {
+  string subscriberId = 1;
+  string username = 2;
+}
+
+message CreateSubscribersBulkFromNaturalPersonsResponse {
+  repeated SubscriberBulkResult results = 1;
 }
 

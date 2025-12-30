@@ -60,14 +60,16 @@ export class SubscribersUpdateService {
       usernameWasUpdated = true;
     }
     if (password !== undefined) {
-      // Comparar si la contraseña enviada es la misma que la actual
-      const isSamePassword = await bcrypt.compare(
-        password,
-        subscriber.password,
-      );
+      // Validar que subscriber.password exista y sea un string antes de comparar
+      let isSamePassword = false;
+
+      if (subscriber.password && typeof subscriber.password === 'string') {
+        // Comparar si la contraseña enviada es la misma que la actual
+        isSamePassword = await bcrypt.compare(password, subscriber.password);
+      }
 
       if (!isSamePassword) {
-        // Solo actualizar si es diferente
+        // Solo actualizar si es diferente o no existe password previo
         const hashedPassword = await bcrypt.hash(password, 10);
         subscriber.password = hashedPassword;
         passwordForEmail = password;

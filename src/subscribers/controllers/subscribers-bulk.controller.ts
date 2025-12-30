@@ -5,16 +5,24 @@ import {
   FindSubscribersWithNaturalPersonsResponseDto,
   PaginationResponseDto,
 } from 'src/common/dto';
-import { SubscribersBulkService } from '../services/bulk';
+import {
+  SubscribersBulkService,
+  SubscribersCreateBulkFromNaturalPersonsService,
+} from '../services/bulk';
 import {
   FindSubscribersByIdsDto,
   FindSubscribersByIdsResponseDto,
 } from '../dto/find-subscribers-by-ids.dto';
+import {
+  CreateSubscribersBulkFromNaturalPersonsDto,
+  CreateSubscribersBulkFromNaturalPersonsResponseDto,
+} from '../dto/create-subscribers-bulk-from-natural-persons.dto';
 
 @Controller()
 export class SubscribersBulkController {
   constructor(
     private readonly subscribersBulkService: SubscribersBulkService,
+    private readonly subscribersCreateBulkFromNaturalPersonsService: SubscribersCreateBulkFromNaturalPersonsService,
   ) {}
 
   @GrpcMethod('SubscribersService', 'FindSubscribersWithNaturalPersons')
@@ -52,5 +60,14 @@ export class SubscribersBulkController {
     if (Array.isArray(result)) return { simple: { subscribers: result } };
     // Si es respuesta paginada
     return { paginated: result };
+  }
+
+  @GrpcMethod('SubscribersService', 'CreateSubscribersBulkFromNaturalPersons')
+  async createSubscribersBulkFromNaturalPersons(
+    data: CreateSubscribersBulkFromNaturalPersonsDto,
+  ): Promise<CreateSubscribersBulkFromNaturalPersonsResponseDto> {
+    return await this.subscribersCreateBulkFromNaturalPersonsService.execute(
+      data,
+    );
   }
 }
