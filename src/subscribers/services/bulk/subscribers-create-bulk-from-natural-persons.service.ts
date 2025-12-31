@@ -11,7 +11,6 @@ import {
 import { SubscribersSubscriptionDetail } from 'src/subscribers-subscription-detail/entities/subscribers-subscription-detail.entity';
 import { SubscriberRole } from 'src/subscribers/entities/subscriber-role.entity';
 import { SubscriptionDetail } from 'src/subscriptions-detail/entities/subscription-detail.entity';
-import * as bcrypt from 'bcryptjs';
 import { RolesCustomService } from 'src/roles/services/custom';
 import { SubscriptionsBussine } from 'src/subscriptions-bussines/entities';
 
@@ -104,38 +103,31 @@ export class SubscribersCreateBulkFromNaturalPersonsService {
 
         // Caso 3: Crear nuevos subscribers (bulk insert)
         if (subscribersToCreate.length > 0) {
-          const hashedPasswords = await Promise.all(
-            subscribersToCreate.map((item) => bcrypt.hash(item.username, 10)),
-          );
+          const newSubscribersToInsert = subscribersToCreate.map((item) => {
+            // Parsear metadata string a JSON y combinar con naturalPerson
+            let parsedMetadata = {};
+            try {
+              parsedMetadata = JSON.parse(item.metadata);
+            } catch (error) {
+              console.log(error);
+              // Si falla el parse, usar objeto vacío
+              parsedMetadata = {};
+            }
 
-          const newSubscribersToInsert = subscribersToCreate.map(
-            (item, index) => {
-              // Parsear metadata string a JSON y combinar con naturalPerson
-              let parsedMetadata = {};
-              try {
-                parsedMetadata = JSON.parse(item.metadata);
-              } catch (error) {
-                console.log(error);
-                // Si falla el parse, usar objeto vacío
-                parsedMetadata = {};
-              }
-
-              return manager.create(Subscriber, {
-                username: item.username,
-                password: hashedPasswords[index],
-                naturalPersonId: item.naturalPersonId,
-                subscriptionsBussine: {
-                  subscriptionBussineId,
-                } as SubscriptionsBussine,
-                isConfirm: true,
-                isActive: true,
-                metadata: {
-                  ...parsedMetadata,
-                  naturalPerson: { naturalPersonId: item.naturalPersonId },
-                },
-              });
-            },
-          );
+            return manager.create(Subscriber, {
+              username: item.username,
+              naturalPersonId: item.naturalPersonId,
+              subscriptionsBussine: {
+                subscriptionBussineId,
+              } as SubscriptionsBussine,
+              isConfirm: true,
+              isActive: true,
+              metadata: {
+                ...parsedMetadata,
+                naturalPerson: { naturalPersonId: item.naturalPersonId },
+              },
+            });
+          });
 
           insertedSubscribers = await manager.save(
             Subscriber,
