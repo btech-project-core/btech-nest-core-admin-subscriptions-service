@@ -1,11 +1,11 @@
 import { IsUUID, IsString, IsNotEmpty } from 'class-validator';
 
 export class AssignSubscriberToServiceDto {
-  @IsUUID('4', { message: 'El campo subscriberId debe ser un UUID válido.' })
+  @IsUUID('all', { message: 'El campo subscriberId debe ser un UUID válido.' })
   @IsNotEmpty({ message: 'El campo subscriberId no puede estar vacío.' })
   subscriberId: string;
 
-  @IsUUID('4', {
+  @IsUUID('all', {
     message: 'El campo subscriptionDetailId debe ser un UUID válido.',
   })
   @IsNotEmpty({

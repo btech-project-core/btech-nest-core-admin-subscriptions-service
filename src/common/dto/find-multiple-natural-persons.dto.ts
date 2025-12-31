@@ -4,7 +4,7 @@ import { NaturalPersonResponseDto } from './natural-person.dto';
 
 export class FindMultipleNaturalPersonsDto {
   @IsArray()
-  @IsUUID('4', { each: true })
+  @IsUUID('all', { each: true })
   @Type(() => String)
   naturalPersonIds: string[];
 

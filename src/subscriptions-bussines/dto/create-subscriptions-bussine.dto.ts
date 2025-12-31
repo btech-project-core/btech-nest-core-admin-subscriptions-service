@@ -9,7 +9,7 @@ import { Type } from 'class-transformer';
 import { CreateSubscriptionDetailDto } from 'src/subscriptions-detail/dto/create-subscription-detail.dto';
 
 export class NaturalPersonForSubscriberDto {
-  @IsUUID('4', { message: 'El naturalPersonId debe ser un UUID válido' })
+  @IsUUID('all', { message: 'El naturalPersonId debe ser un UUID válido' })
   naturalPersonId: string;
 
   @IsString({ message: 'El documentNumber debe ser un string' })

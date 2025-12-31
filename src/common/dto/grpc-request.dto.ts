@@ -73,7 +73,7 @@ export class FindSubscribersWithNaturalPersonsRequest {
   @IsString({
     message: 'El campo subscriptionDetailId debe ser una cadena de caracteres.',
   })
-  @IsUUID('4', {
+  @IsUUID('all', {
     message: 'El campo subscriptionDetailId debe ser un UUID válido.',
   })
   @IsNotEmpty({

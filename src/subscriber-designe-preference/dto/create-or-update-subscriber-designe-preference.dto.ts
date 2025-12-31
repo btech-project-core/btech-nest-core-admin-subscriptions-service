@@ -4,7 +4,7 @@ export class CreateOrUpdateSubscriberDesignePreferenceDto {
   @IsNotEmpty({
     message: 'El ID del suscriptor es un campo obligatorio',
   })
-  @IsUUID('4', {
+  @IsUUID('all', {
     message: 'El ID del suscriptor debe ser un UUID válido',
   })
   subscriberId: string;
@@ -12,7 +12,7 @@ export class CreateOrUpdateSubscriberDesignePreferenceDto {
   @IsNotEmpty({
     message: 'El ID del modo de diseño es un campo obligatorio',
   })
-  @IsUUID('4', {
+  @IsUUID('all', {
     message: 'El ID del modo de diseño debe ser un UUID válido',
   })
   subscriptionDetailDesigneModeId: string;

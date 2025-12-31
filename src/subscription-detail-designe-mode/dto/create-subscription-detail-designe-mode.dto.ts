@@ -1,7 +1,7 @@
 import { IsBoolean, IsNotEmpty, IsOptional, IsUUID } from 'class-validator';
 
 export class CreateSubscriptionDetailDesigneModeDto {
-  @IsUUID('4', {
+  @IsUUID('all', {
     message: 'El campo subscriptionDetailId debe ser un UUID válido.',
   })
   @IsNotEmpty({
@@ -9,7 +9,7 @@ export class CreateSubscriptionDetailDesigneModeDto {
   })
   subscriptionDetailId: string;
 
-  @IsUUID('4', {
+  @IsUUID('all', {
     message: 'El campo designerModeId debe ser un UUID válido.',
   })
   @IsNotEmpty({ message: 'El campo designerModeId no puede estar vacío.' })

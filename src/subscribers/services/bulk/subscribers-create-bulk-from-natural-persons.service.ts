@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
@@ -10,8 +11,6 @@ import {
   CreateSubscribersBulkFromNaturalPersonsResponseDto,
   SubscriberBulkResultDto,
 } from 'src/subscribers/dto/create-subscribers-bulk-from-natural-persons.dto';
-import { SubscribersSubscriptionDetail } from 'src/subscribers-subscription-detail/entities/subscribers-subscription-detail.entity';
-import { SubscriberRole } from 'src/subscribers/entities/subscriber-role.entity';
 import { RolesCustomService } from 'src/roles/services/custom';
 
 @Injectable()
@@ -125,49 +124,55 @@ export class SubscribersCreateBulkFromNaturalPersonsService {
       await this.dataSource.transaction(async (manager) => {
         let insertedSubscribers: Subscriber[] = [];
 
-        // Caso 3: Crear nuevos subscribers (bulk insert directo)
+        // Caso 3: Crear nuevos subscribers con SQL directo
         if (subscribersToCreate.length > 0) {
-          const newSubscribersData = subscribersToCreate.map((item) => {
-            // Parsear metadata string a JSON y combinar con naturalPerson
-            let parsedMetadata = {};
-            try {
-              parsedMetadata = JSON.parse(item.metadata);
-            } catch (error) {
-              console.log(error);
-              parsedMetadata = {};
-            }
+          const subscribersValues = subscribersToCreate
+            .map((item) => {
+              // Parsear metadata string a JSON y combinar con naturalPerson
+              let parsedMetadata = {};
+              try {
+                parsedMetadata = JSON.parse(item.metadata);
+              } catch (error) {
+                console.log(error);
+                parsedMetadata = {};
+              }
 
-            return {
-              username: item.username,
-              naturalPersonId: item.naturalPersonId,
-              subscriptionsBussineId: subscriptionBussineId,
-              isConfirm: true,
-              isActive: true,
-              metadata: {
+              const metadata = {
                 ...parsedMetadata,
                 naturalPerson: { naturalPersonId: item.naturalPersonId },
-              },
-            };
-          });
+              };
 
-          // INSERT directo con QueryBuilder (mucho más rápido que save)
-          const insertResult = await manager
-            .createQueryBuilder()
-            .insert()
-            .into(Subscriber)
-            .values(newSubscribersData as any)
-            .execute();
+              const metadataJson = JSON.stringify(metadata).replace(/'/g, "''");
 
-          // Obtener los IDs insertados
-          const insertedIds = insertResult.identifiers.map(
-            (id) => id.subscriberId,
+              return `(UUID(), '${item.username.replace(/'/g, "''")}', NULL, '${item.naturalPersonId}', '${subscriptionBussineId}', 1, 1, '${metadataJson}', NOW(), NOW())`;
+            })
+            .join(',');
+
+          // INSERT con SQL directo - maneja duplicados
+          await manager.query(`
+            INSERT INTO subscriber (subscriberId, username, password, naturalPersonId, subscriptionsBussineId, isConfirm, isActive, metadata, createdAt, updatedAt)
+            VALUES ${subscribersValues}
+            ON DUPLICATE KEY UPDATE updatedAt = NOW()
+          `);
+
+          console.log('Subscribers inserted:', subscribersToCreate.length);
+
+          // Recuperar los subscribers insertados por naturalPersonId
+          const naturalPersonIds = subscribersToCreate.map(
+            (s) => s.naturalPersonId,
           );
-
-          // Recuperar los subscribers insertados (necesarios para las relaciones)
           insertedSubscribers = await manager
             .createQueryBuilder(Subscriber, 'subscriber')
-            .whereInIds(insertedIds)
+            .where('subscriber.naturalPersonId IN (:...naturalPersonIds)', {
+              naturalPersonIds,
+            })
+            .andWhere(
+              'subscriber.subscriptionsBussineId = :subscriptionBussineId',
+              { subscriptionBussineId },
+            )
             .getMany();
+
+          console.log('Subscribers retrieved:', insertedSubscribers.length);
         }
 
         // Combinar subscribers a asignar: nuevos + existentes
@@ -177,40 +182,87 @@ export class SubscribersCreateBulkFromNaturalPersonsService {
         ];
 
         if (allSubscribersToAssign.length > 0) {
-          // Bulk insert de SubscribersSubscriptionDetail (INSERT directo)
-          const subscriptionDetailsData = allSubscribersToAssign.map(
-            (subscriber) => ({
-              subscriberId: subscriber.subscriberId,
-              subscriptionDetailId: subscriptionDetailId,
-              isActive: true,
-            }),
+          // Bulk insert de SubscribersSubscriptionDetail con SQL directo
+          const subscriptionDetailsValues = allSubscribersToAssign
+            .map(
+              (subscriber) =>
+                `(UUID(), '${subscriber.subscriberId}', '${subscriptionDetailId}', 1, NOW(), NOW())`,
+            )
+            .join(',');
+
+          await manager.query(`
+            INSERT INTO subscribersSubscriptionDetail (subscribersSubscriptionDetailId, subscriberId, subscriptionDetailId, isActive, createdAt, updatedAt)
+            VALUES ${subscriptionDetailsValues}
+            ON DUPLICATE KEY UPDATE updatedAt = NOW()
+          `);
+
+          console.log(
+            'SubscribersSubscriptionDetail inserted:',
+            allSubscribersToAssign.length,
           );
 
-          const insertDetailsResult = await manager
-            .createQueryBuilder()
-            .insert()
-            .into(SubscribersSubscriptionDetail)
-            .values(subscriptionDetailsData)
-            .execute();
-
-          // Obtener los IDs insertados
-          const insertedDetailIds = insertDetailsResult.identifiers.map(
-            (id) => id.subscribersSubscriptionDetailId,
+          // Obtener los IDs insertados de SubscribersSubscriptionDetail
+          const subscriberIds = allSubscribersToAssign.map(
+            (s) => s.subscriberId,
           );
 
-          // Bulk insert de SubscriberRole (INSERT directo)
-          const subscriberRolesData = insertedDetailIds.map((detailId) => ({
-            subscribersSubscriptionDetailId: detailId,
-            roleId: cliRole.roleId,
-            isActive: true,
-          }));
+          console.log('Querying SubscribersSubscriptionDetail with:', {
+            subscriberIdsCount: subscriberIds.length,
+            subscriptionDetailId,
+            sampleSubscriberId: subscriberIds[0],
+          });
 
-          await manager
-            .createQueryBuilder()
-            .insert()
-            .into(SubscriberRole)
-            .values(subscriberRolesData)
-            .execute();
+          const insertedDetails = await manager.query(
+            `
+            SELECT subscribersSubscriptionDetailId
+            FROM subscribersSubscriptionDetail
+            WHERE subscriberId IN (${subscriberIds.map((id) => `'${id}'`).join(',')})
+              AND subscriptionDetailId = ?
+          `,
+            [subscriptionDetailId],
+          );
+
+          console.log(
+            'SubscribersSubscriptionDetail retrieved:',
+            insertedDetails.length,
+          );
+          console.log('Sample detail:', insertedDetails[0]);
+
+          // Bulk insert de SubscriberRole con SQL directo
+          if (insertedDetails.length > 0) {
+            // Validar que todos los IDs sean válidos
+            const validDetails = insertedDetails.filter(
+              (d) => d.subscribersSubscriptionDetailId,
+            );
+
+            if (validDetails.length === 0) {
+              console.log(
+                'ERROR: No valid subscribersSubscriptionDetailId found!',
+              );
+              throw new Error(
+                'No valid subscribersSubscriptionDetailId for SubscriberRole insert',
+              );
+            }
+
+            const subscriberRolesValues = validDetails
+              .map(
+                (detail) =>
+                  `(UUID(), '${detail.subscribersSubscriptionDetailId}', '${cliRole.roleId}', 1, NOW(), NOW())`,
+              )
+              .join(',');
+
+            await manager.query(`
+              INSERT INTO subscriberRole (subscriberRoleId, subscribersSubscriptionDetailId, roleId, isActive, createdAt, updatedAt)
+              VALUES ${subscriberRolesValues}
+              ON DUPLICATE KEY UPDATE updatedAt = NOW()
+            `);
+
+            console.log('SubscriberRole inserted:', validDetails.length);
+          } else {
+            console.log(
+              'WARNING: No SubscribersSubscriptionDetail found to create roles!',
+            );
+          }
         }
 
         // Agregar nuevos subscribers a resultados

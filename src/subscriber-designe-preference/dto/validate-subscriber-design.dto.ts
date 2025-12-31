@@ -4,7 +4,7 @@ export class ValidateSubscriberDesignDto {
   @IsNotEmpty({
     message: 'El ID del suscriptor es un campo obligatorio',
   })
-  @IsUUID('4', {
+  @IsUUID('all', {
     message: 'El ID del suscriptor debe ser un UUID válido',
   })
   subscriberId: string;
